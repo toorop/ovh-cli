@@ -1,4 +1,4 @@
-# OVH API CLI
+# OVH CLI
 
 ## How to use
 
@@ -19,6 +19,7 @@ On Linux and MacOs run app with :
 On windows with :
 
 	./ovh.exe
+	
 
 ## Avalaible commands
 We will consider Linux|MacOs version, just replace *ovh* by *ovh.exe* if you are using Windows.
@@ -27,11 +28,11 @@ All WORDS in uppercase are variables, words in lower cases are parts of the comm
   
 ### IP
 #### List IP Block
-	ovh ip list
+	./ovh ip list
 Will return all your IP
 You can provide a third argument defining the type of IP returned. For exemple, if you only want IP attached to tour dedicated server, run the command :
 
-	ovh ip list dedicated
+	./ovh ip list dedicated
 	
 Available type are :
 
@@ -51,11 +52,11 @@ Available type are :
 ### FIREWALL
 All commands concerning firewall start with :
 
-	ovh ip fw
+	./ovh ip fw
 	
 #### List IPs of an IP block which are under firewall
 
-	ovh ip fw IPBLOCK list
+	./ovh ip fw IPBLOCK list
 	
 Where :
 
@@ -65,12 +66,12 @@ Response : Return a list of IPV4, one per line. Or error.
 
 Example :
 	
-	ovh ip fw 176.31.189.121/32 list
+	./ovh ip fw 176.31.189.121/32 list
 	176.31.189.121	
 	
 #### Add an IP on firewall
 
-	ovh ip fw IPBLOCK IPV4 add
+	./ovh ip fw IPBLOCK IPV4 add
 	
 Where :
 
@@ -81,12 +82,12 @@ Response : "IPV4 added to firewall" if the command succeed an error otherwise.
 	
 Example :
 
-	ovh ip fw 176.31.189.121/32 176.31.189.121 add
+	./ovh ip fw 176.31.189.121/32 176.31.189.121 add
 	176.31.189.121 added to firewall	
 
 #### Remove an IP from firewall
 
-	ovh ip fw IPBLOCK IPV4 remove
+	./ovh ip fw IPBLOCK IPV4 remove
 
 Where :
 
@@ -97,12 +98,12 @@ Response : "IPV4 removed from firewall" if the command succeed an error otherwis
 	
 Example :
 	
-	ovh ip fw 176.31.189.121/32 176.31.189.121 remove
+	./ovh ip fw 176.31.189.121/32 176.31.189.121 remove
 	176.31.189.121 removed from firewall
 		
 #### Get Properties of a firewalled IP
 	
-	ip fw IPBLOCK IPV4 prop
+	./ovh ip fw IPBLOCK IPV4 prop
 
 Where :
 
@@ -112,6 +113,7 @@ Where :
 Response : Properties on success, one per line. Error otherwise.
 
 Example 
+
 	./ovh ip fw 176.31.189.121/32 176.31.189.121 prop
 	ipOnFirewall: 176.31.189.121
 	Enabled: false
@@ -119,7 +121,7 @@ Example
 
 #### Enable firewall
 
-	ip fw IPBLOCK IPV4 enable
+	./ovh ip fw IPBLOCK IPV4 enable
 
 Where :
 
@@ -136,9 +138,9 @@ Example :
 
 #### Disable firewall
 
-	ip fw IPBLOCK IPV4 disable
+	./ovh ip fw IPBLOCK IPV4 disable
 
-Where :
+With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK		
@@ -150,11 +152,82 @@ Example :
 	./ovh ip fw 176.31.189.121/32 176.31.189.121 disable
 	ok
 	
-#### Get a firewall rule
+#### Add a firewall rule
+
+	 ./ovh ip fw IPBLOCK IPV4 addRule 'RULE'
+	 
+
+With :
+
+* IPBLOCK : an ip block given by "ovh ip list"
+* IPV4 : an IP v4 from IPBLOCK	
+* RULE : a JSON encoded rule object. See below.
+
+##### JSON encoded rule format definition
+
+Properties of the rule object are (* = requiered) :
+
+* action* : Action of this rule. "permit" ot "deny".
+* protocol* : "icmp" or "ipv4" or "tcp" or "udp"
+* sequence* : sequence number of the rule (rule are excecuted from sequence=0 to sequence=n)
+* source : Source ip for the rule. Any if not set.
+* sourcePort : Source port range for the rule. Only with TCP/UDP protocol. It's an object with two properties :
+	* from : first port
+	* to : last port
+* destinationPort : Destination port range for the rule. Only with TCP/UDP protocol. It's an object with two properties :
+	* from : first port
+	* to : last port
+* tcpOption : It's a object with muliple boolean properties, if a propertie is set to true, the flag will be enabled :
+	* ack
+	* established
+	* fin
+	* psh
+	* rst
+	* syn
+	* urg
+* udpOption	: It's a object with muliple boolean properties, if a propertie is set to true, the flag will be enabled :
+	* fragments 
+	 
+
+Examples :	 
+	 
+	  ./ovh ip fw 176.31.189.121/32 176.31.189.121 addRule '{"action":"deny","protocol":"udp","sequence":"0"}'
+	  
+Will add a rule	which deny all incoming udp traffic 
+
+	  ./ovh ip fw 176.31.189.121/32 176.31.189.121 addRule '{"action": "permit", "destinationPort": {"from": 22, "to": 22},"protocol":"tcp","sequence": "1","source": "46.105.152.56/32"}'
+
+Will add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
+
+	./ovh ip fw 176.31.189.121/32 176.31.189.121 addRule '{"action": "deny","destinationPort": {"to": 22,"from": 22},"protocol": "tcp","sequence": "2"}'
 	
-	ip fw IPBLOCK IPV4 getRule SEQUENCE
+Will add a rule wich deny any connection to port 22 (SSH).
+
+Rules are tested from sequence 0 to sequence n. When a rule matches it is applied and no other rules are tested. That mean with those examples that only IP 10.12.13.14 will be able to connect thru SSH to IP 176.31.189.121.
+	  	
 	
-Where :
+#### Remove a firewall rule
+
+	 ./ovh ip fw IPBLOCK IPV4 remRule SEQUENCE
+
+With :
+
+* IPBLOCK : an ip block given by "ovh ip list"
+* IPV4 : an IP v4 from IPBLOCK	
+* SEQUENCE : Seqeunce number of the rule
+
+Response : "Rule SEQUENE removed" on success or error.	 
+Example :
+
+	./ovh ip fw 176.31.189.121/32 176.31.189.121 remRule 1
+	Rule 1 removed	
+
+	
+#### Get info about a firewall rule
+	
+	./ovh ip fw IPBLOCK IPV4 getRule SEQUENCE
+	
+With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK	

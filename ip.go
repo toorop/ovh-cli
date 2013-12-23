@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Toorop/govh"
 	"github.com/Toorop/govh/ip"
+	//"os"
+	"strconv"
 	"strings"
 )
 
@@ -13,8 +16,6 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 	client := govh.NewClient(OVH_APP_KEY, OVH_APP_SECRET, ck)
 	// New ip ressource
 	ipr, err := ip.New(client)
-
-	//debug(cmd.Action)
 
 	switch cmd.Action {
 	// List
@@ -118,15 +119,70 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 			dieOk(fmt.Sprintf("%s removed from firewall", cmd.Args[3]))
 		}
 
+		// Get rules sequences
 		// ip fw ipBlock.IP ipV4 listRules all
+		if len(cmd.Args) >= 5 && cmd.Args[4] == "listRules" {
+			block := ip.IpBlock{cmd.Args[2], ""}
+			state := ""
+			if len(cmd.Args) == 6 {
+				state = cmd.Args[6]
+			}
+			t, err := ipr.FwGetRulesSequences(block, cmd.Args[3], state)
+			if err != nil {
+				dieError(err)
+			}
+			var r string
+			if len(t) > 0 {
+				r = fmt.Sprintf("%d", t[0])
+				for _, s := range t[1:] {
+					r = fmt.Sprintf("%s%s%d", r, NL, s)
+				}
+			}
+			dieOk(r)
+		}
 
-		// ip fw ipBlock.IP ipV4 addRules rule (as Json)
+		// Add rule
+		// ip fw ipBlock.IP ipV4 addRule rule (as Json)
+		if len(cmd.Args) == 6 && cmd.Args[4] == "addRule" {
+			block := ip.IpBlock{cmd.Args[2], ""}
+			// Check json
+			var rule ip.FirewallRule2Add
+			err := json.Unmarshal([]byte(cmd.Args[5]), &rule)
+			if err != nil {
+				dieError("Rule error. See doc at : https://github.com/Toorop/ovh-cli", err)
+			}
+			err = ipr.FwAddRule(block, cmd.Args[3], rule)
+			if err != nil {
+				dieError(err)
+			}
+			dieOk("OK")
+		}
+
+		// Remove rule
+		// ip fw ipBlock.IP ipV4 removeRule ruleSequence
+		if len(cmd.Args) == 6 && cmd.Args[4] == "remRule" {
+			block := ip.IpBlock{cmd.Args[2], ""}
+			sequence, err := strconv.Atoi(cmd.Args[5])
+			if err != nil {
+				dieError(err)
+			}
+			err = ipr.FwRemoveRule(block, cmd.Args[3], sequence)
+			if err != nil {
+				dieError(err)
+			}
+			dieOk(fmt.Sprintf("Rule %d removed", sequence))
+
+		}
 
 		// Get rule
 		// ip fw ipBlock.IP ipV4 getRule sequence
 		if len(cmd.Args) == 6 && cmd.Args[4] == "getRule" {
 			block := ip.IpBlock{cmd.Args[2], ""}
-			rule, err := ipr.FwGetRule(block, cmd.Args[3], cmd.Args[5])
+			sequence, err := strconv.Atoi(cmd.Args[5])
+			if err != nil {
+				dieError(err)
+			}
+			rule, err := ipr.FwGetRule(block, cmd.Args[3], sequence)
 			if err != nil {
 				dieError(err)
 			}
@@ -167,9 +223,7 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 			dieOk(out[0 : len(out)-2])
 
 		}
-
-		// ip fw ipBlock.IP ipV4 delRule sequence
-
+		err = errors.New(fmt.Sprintf("This action : '%s' is not valid or not implemented yet !", strings.Join(cmd.Args, " ")))
 		break
 	default:
 		err = errors.New(fmt.Sprintf("This action : '%s' is not valid or not implemented yet !", strings.Join(cmd.Args, " ")))
