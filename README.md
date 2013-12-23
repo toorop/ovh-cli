@@ -203,7 +203,7 @@ Will add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
 	
 Will add a rule wich deny any connection to port 22 (SSH).
 
-Rules are tested from sequence 0 to sequence n. When a rule matches it is applied and no other rules are tested. That mean with those examples that only IP 10.12.13.14 will be able to connect thru SSH to IP 176.31.189.121.
+Rules are tested from sequence 0 to sequence n. When a rule matches it is applied and no other rules are tested. That mean with those examples that only IP 46.105.152.56 will be able to connect thru SSH to IP 176.31.189.121.
 	  	
 	
 #### Remove a firewall rule
