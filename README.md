@@ -10,7 +10,9 @@
 
 
 #### 2 - Get a consumer key
-In order to access to your account, the app need your authorization. You have to get "a consumer key" and put "Keep calm and carry on", the app di all the job for you, just run it and follow instructions :
+In order to access to your account, the app need your authorization. You have to get "a consumer key" and record it as an environement variable.
+
+"Keep calm and carry on", the app will do the job for you, just run it and follow instructions :
 
 On Linux and MacOs run app with :
 
