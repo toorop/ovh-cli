@@ -9,6 +9,7 @@ import (
 	//"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func ipHandler(cmd *Cmd) (resp string, err error) {
@@ -159,7 +160,7 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 		}
 
 		// Remove rule
-		// ip fw ipBlock.IP ipV4 removeRule ruleSequence
+		// ip fw ipBlock.IP ipV4 remRule ruleSequence
 		if len(cmd.Args) == 6 && cmd.Args[4] == "remRule" {
 			block := ip.IpBlock{cmd.Args[2], ""}
 			sequence, err := strconv.Atoi(cmd.Args[5])
@@ -225,6 +226,105 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 		}
 		err = errors.New(fmt.Sprintf("This action : '%s' is not valid or not implemented yet !", strings.Join(cmd.Args, " ")))
 		break
+
+	case "spam":
+		// List of spamming IP
+		// ip spam ipBlock.IP listSpammingIp STATE
+		if len(cmd.Args) >= 4 && cmd.Args[3] == "listSpammingIp" {
+			block := ip.IpBlock{cmd.Args[2], ""}
+			state := ""
+			if len(cmd.Args) == 5 {
+				state = cmd.Args[4]
+			}
+			ips, err := ipr.SpamGetSpammingIps(block, state)
+			if err != nil {
+				dieError(err)
+			}
+			for _, ip := range ips {
+				fmt.Println(ip)
+			}
+			dieOk("")
+		}
+
+		// detailed info about a spamming IP
+		// ip spam ipBlock.IP ipv4 details
+		if len(cmd.Args) == 5 && cmd.Args[4] == "details" {
+			block := ip.IpBlock{cmd.Args[2], ""}
+			spamIp, err := ipr.SpamGetSpamIp(block, cmd.Args[3])
+			if err != nil {
+				dieError(err)
+			}
+			dieOk(fmt.Sprintf("Time: %d%sDate: %s%sIpSpamming: %s%sState: %s", spamIp.Time, NL, spamIp.Date, NL, spamIp.IpSpamming, NL, spamIp.State))
+		}
+
+		// Stats about a spamming IP
+		// ip spam ipBlock.IP ipv4 stats FROM TO
+		if len(cmd.Args) == 7 && cmd.Args[4] == "stats" {
+			block := ip.IpBlock{cmd.Args[2], ""}
+
+			from, err := strconv.ParseInt(cmd.Args[5], 10, 64)
+			if err != nil {
+				dieError(err)
+			}
+
+			to, err := strconv.ParseInt(cmd.Args[6], 10, 64)
+			if err != nil {
+				dieError(err)
+			}
+			spamStats, err := ipr.SpamGetIpStats(block, cmd.Args[3], time.Unix(from, 0), time.Unix(to, 0))
+			if err != nil {
+				dieError(err)
+			}
+			if spamStats == nil {
+				dieOk("No spam stats for this period")
+			}
+			fmt.Printf("Blocked for the last time: %s%s", time.Unix(spamStats.Timestamp, 0).Format(time.RFC822Z), NL)
+			fmt.Printf("Number of emails sent: %d%s", spamStats.Total, NL)
+			fmt.Printf("Number of spams sent: %d%s", spamStats.NumberOfSpams, NL)
+			fmt.Printf("Average score: %d%s%s", spamStats.AverageSpamScore, NL, NL)
+			if len(spamStats.DetectedSpams) > 0 {
+				fmt.Println("Detected Spams : ", NL)
+			}
+			for _, ds := range spamStats.DetectedSpams {
+				fmt.Println("")
+				fmt.Printf("\tDate: %s%s", time.Unix(ds.Date, 0).Format(time.RFC822Z), NL)
+				fmt.Printf("\tMessage ID: %s%s", ds.MessageId, NL)
+				fmt.Printf("\tDestination IP: %s%s", ds.DestinationIp, NL)
+				fmt.Printf("\tScore: %d%s", ds.Spamscore, NL)
+			}
+			dieOk("")
+		}
+
+		// Unblock
+		// ip spam ipBlock.IP ipv4 unblock
+		if len(cmd.Args) == 5 && cmd.Args[4] == "unblock" {
+			block := ip.IpBlock{cmd.Args[2], ""}
+			err := ipr.SpamUnblockSpamIp(block, cmd.Args[3])
+			if err != nil {
+				dieError(err)
+			}
+			dieOk("ok")
+		}
+
+		err = errors.New(fmt.Sprintf("This action : '%s' is not valid or not implemented yet !", strings.Join(cmd.Args, " ")))
+		break
+	case "getBlockedForSpam":
+		// On va chercher les blocks
+		ips, err := ipr.GetBlockedForSpam()
+		if err != nil {
+			dieError(err)
+		}
+		if len(ips) == 0 {
+			dieOk("")
+		}
+		for _, i := range ips {
+			fmt.Println(i)
+		}
+		dieOk("")
+
+		// On les tests
+		break
+
 	default:
 		err = errors.New(fmt.Sprintf("This action : '%s' is not valid or not implemented yet !", strings.Join(cmd.Args, " ")))
 	}
