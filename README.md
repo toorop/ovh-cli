@@ -293,7 +293,7 @@ Example :
 	IpSpamming: 178.33.223.43
 	State: unblocked	
  		
-#### Unblock a blcoked IP
+#### Unblock a blocked IP
 
 	./ovh ip spam IPBLOCK IPV4 unblock 
 
