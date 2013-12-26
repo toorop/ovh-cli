@@ -17,6 +17,7 @@ const (
 	OVH_APP_KEY    = "SECRET"
 	OVH_APP_SECRET = "SECRET"
 	NL             = "\r\n"
+	TAB            = "\t"
 )
 
 var (
@@ -26,7 +27,6 @@ var (
 
 func init() {
 	flag.StringVar(&ck, "ck", "", "Consumer Key")
-	//flag.StringVar(&outputFormat, "of", "JSON", "Output format")
 	flag.Parse()
 
 	if len(flag.Args()) > 0 {
