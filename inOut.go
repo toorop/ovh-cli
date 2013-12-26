@@ -17,7 +17,9 @@ func dieError(v ...interface{}) {
 }
 
 func dieOk(r string) {
-	fmt.Println(r)
+	if r != "" {
+		fmt.Println(r)
+	}
 	os.Exit(0)
 }
 
