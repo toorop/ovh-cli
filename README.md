@@ -4,9 +4,9 @@
 
 #### 1 - Download executable
 
-* Windows : ftp://ftp.toorop.fr/softs/ovh_cli/windows/ovh.exe
-* MacOs : ftp://ftp.toorop.fr/softs/ovh_cli/macos/ovh
-* Linux : ftp://ftp.toorop.fr/softs/ovh_cli/linux/ovh
+* Windows : [http://dl.toorop.fr/softs/ovh_cli/windows/ovh.exe](http://dl.toorop.fr/softs/ovh_cli/windows/ovh.exe "ovh-cli for windows")
+* MacOs : [http://dl.toorop.fr/softs/ovh_cli/macos/ovh](http://dl.toorop.fr/softs/ovh_cli/macos/ovh "ovh-cli for Mac")
+* Linux : [http://dl.toorop.fr/softs/ovh_cli/linux/ovh](http://dl.toorop.fr/softs/ovh_cli/linux/ovh "ovh-cli for Linux")
 
 
 #### 2 - Get a consumer key
