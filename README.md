@@ -28,7 +28,7 @@ We will consider Linux|MacOs version, just replace *ovh* by *ovh.exe* if you are
 
 All WORDS in uppercase are variables, words in lower cases are parts of the command to be executed.
   
-### IP
+## IP
 #### List IP Block
 	./ovh ip list
 Will return all your IP
@@ -352,7 +352,7 @@ Example :
 
 	./ovh ip getBlockedForSpam
 	
-Response : Litst of blocked IP, one per line or error
+Response : List of blocked IP, one per line or error
 
 Example :
 
@@ -360,6 +360,60 @@ Example :
 	178.33.223.41
 	178.33.223.42
 	178.33.223.43	
+	
+## SMS
+#### List SMS services
+
+	./ovh sms listServices	
+
+Response : list of SMS services, one per line, or Error
+
+Example :
+	
+	./ovh sms listServices	
+	sms-st2-1
+	
+#### Create a new SMS job (eg send a sms)
+
+	./ovh sms SMS_SERVICE new 'JSON_ENCODED_SMS_JOB'
+	
+With :
+
+* SMS_SERVICE : A sms service returned by "./ovh sms listServices"
+* JSON_ENCODED_SMS_JOB : a JSON encoded SMS Job, see below.
+
+##### JSON encoded SMS job format
+It's an JSON object, with thoses properties (* = requiered)
+
+* message* : message to send (string)
+* receivers* : array of receivers (array of string)
+* sender* : sender (string) 
+* noStopClause : bool
+* priority : hight|low|medium|veryLow (string)
+* validityPeriod : The maximum time -in minute(s)- before the message is dropped. default 2880 (int)
+* senderForResponse : (bool)
+* charset : default UTF-8 (string)
+* coding : defaut 7bit (string)
+* differedPeriod : The time -in minute(s)- to wait before sending the message (int)
+* receiversSlotId :The receivers document url link in csv format (string)
+* class : flash|sim|phoneDisplay|toolkit (string)
+* serviceName : The internal name of your SMS offer (string) 
+
+Response :
+* on success : string ""Done" + jobs ID + credits removed
+* on failure : error
+
+
+Example :
+
+	./ovh sms new sms-su22-1 '{"message": "Test sms message","receivers": ["+336222XXXX"],"sender": "+33979XXXXX"}'
+	Done
+	Job ID: 17185893
+	Credits removed: 1
+
+	
+	
+	
 	
 
 
