@@ -12,11 +12,16 @@ import (
 	"time"
 )
 
-func ipHandler(cmd *Cmd) (resp string, err error) {
+func ipHandler(cmd *Cmd) (err error) {
 	// New govh client
 	client := govh.NewClient(OVH_APP_KEY, OVH_APP_SECRET, ck)
 	// New ip ressource
 	ipr, err := ip.New(client)
+	if err != nil {
+		return
+	}
+
+	var resp string
 
 	switch cmd.Action {
 	// List
@@ -35,6 +40,7 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 		if len(resp) > 2 {
 			resp = resp[0 : len(resp)-2]
 		}
+		dieOk(resp)
 		break
 	case "lb":
 		if len(cmd.Args) < 3 {
@@ -43,6 +49,7 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 		var t []byte
 		t, err = ipr.LbList()
 		resp = string(t)
+		dieOk(resp)
 		break
 
 	case "fw":
@@ -61,6 +68,7 @@ func ipHandler(cmd *Cmd) (resp string, err error) {
 			if len(resp) > 2 {
 				resp = resp[0 : len(resp)-2]
 			}
+			dieOk(resp)
 			break
 		}
 
