@@ -103,22 +103,24 @@ func init() {
 
 // Main
 func main() {
-	var resp string
+	//var resp string
 	var err error
 
 	switch cmd.Domain {
 	case "ip":
-		resp, err = ipHandler(&cmd)
+		err = ipHandler(&cmd)
+		break
+	case "sms":
+		err = smsHandler(&cmd)
 		break
 	case "help":
-		resp = "See : https://github.com/Toorop/govh"
+		dieOk("See : https://github.com/Toorop/govh")
 		break
 	default:
 		dieError("This section '", cmd.Domain, "' is not valid or not implemented yet !")
 	}
 	if err != nil {
-		dieError(err, resp)
+		dieError(err)
 	}
-	dieOk(resp)
-
+	//dieOk(resp)
 }
