@@ -410,6 +410,75 @@ Example :
 	Done
 	Job ID: 17185893
 	Credits removed: 1
+	
+## SERVER (TODO)
+#### List your dedicated servers
+	./ovh server list
+	
+Response: all your server names one per line.
+
+Example :
+
+### Get server properties
+	./ovh server SERVER_NAME properties
+
+With :
+
+* SERVER_NAME : name of the server (from ./ovh server list)
+
+Response : A JSON encoded object (see example)
+
+
+### Reboot server
+	./ovh server SERVER_NAME reboot
+	
+With :
+
+* SERVER_NAME : name of the server (from ./ovh server list)
+
+Response : A server task as JSON encoded object (see example)
+
+Example :
+
+
+### Get server tasks
+	./ovh server SERVER_NAME getTasks
+	
+With :
+
+* SERVER_NAME : name of the server (from ./ovh server list)
+
+Response : A list of task ID (1 per line)	
+
+
+### Get server task properties
+	./ovh server SERVER_NAME getTaskProperties TASK_ID
+	
+With :
+
+* SERVER_NAME : name of the server (from ./ovh server list)
+* TASK_ID : id of the task as returned by getTasks
+
+Response : 	A server task as JSON encoded object (see example)
+
+Example :
+
+	
+### Cancel server task
+	./ovh server SERVER_NAME cancelTask TASK_ID
+	
+With :
+
+* SERVER_NAME : name of the server (from ./ovh server list)
+* TASK_ID : id of the task as returned by getTasks
+
+Response : boolean 	
+
+		
+		
+	 	
+	
+	
 
 	
 	

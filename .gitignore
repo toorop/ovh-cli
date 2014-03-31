@@ -3,3 +3,7 @@
 /bin/
 
 /build
+
+/tools/watchIp/watchIp
+
+/tools/watchIp/watchIp.go

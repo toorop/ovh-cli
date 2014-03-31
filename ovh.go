@@ -37,7 +37,7 @@ func init() {
 		}
 	}
 
-	// WYAUsR31Z3dT9Y5f0arTHeZwpFRdcnz2
+	// Consumer key
 	ck = os.Getenv("OVH_CONSUMER_KEY")
 
 	// if No ConsumerKey, request one
