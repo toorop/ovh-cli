@@ -415,64 +415,128 @@ Example :
 #### List your dedicated servers
 	./ovh server list
 	
-Response: all your server names one per line.
+Response: all your server names. One per line.
 
 Example :
 
+	./ovh server list
+	ns309865.ovh.net
+	ns205931.ovh.net
+	ks323462.kimsufi.com
+	ns212758.ovh.net
+	ns26462.ovh.net
+
 ### Get server properties
-	./ovh server SERVER_NAME properties
+	./ovh server properties SERVER_NAME 
 
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
 
-Response : A JSON encoded object (see example)
+Response : String with one property by line
+
+Example :
+
+	./ovh server properties ns309865.ovh.net
+	ID: 100800
+	Name: ns309865.ovh.net
+	Ip: 188.165.197.13
+	Datacenter: rbx3
+	ProfessionalUse: true
+	CommercialRange: sp
+	Os: proxmox_64
+	State: ok
+	Reverse: 8.vz.protecmail.com.
+	Monitored: true
+	Rack: 41G07
+	RootDevice:
+	LinkSpeed: 100
+	Bootid: 1
 
 
 ### Reboot server
-	./ovh server SERVER_NAME reboot
+	./ovh server reboot SERVER_NAME 
 	
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
 
-Response : A server task as JSON encoded object (see example)
+Response : A server task as string (see example)
 
 Example :
+
+	./ovh server reboot ks323462.kimsufi.com
+	Task ID: 2296596
+	Function: hardReboot
+	Status: init
+	Comment: Reboot asked
+	Last Upadte: 2014-04-01T08:43:23+02:00
+	Start Date: 2014-04-01T08:43:23+02:00
+	Done Date:
 
 
 ### Get server tasks
-	./ovh server SERVER_NAME getTasks
+	./ovh server getTasks SERVER_NAME FUNCTION STATUS
 	
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
+* FUNCTION (optional) : filter by function. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables functions.
+* STATUS (optional) : filter by status. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables status.
+
+For STATUS and FUNCTION you can use "all" as wildcard if you want to filter by STATUS (./ovh server getTasks SERVER_NAME all done)
 
 Response : A list of task ID (1 per line)	
 
+Example :
+	
+	./ovh server getTasks ns309865.ovh.net hardReboot done
+	2296596
+	2296597
+
 
 ### Get server task properties
-	./ovh server SERVER_NAME getTaskProperties TASK_ID
+	./ovh server getTaskProperties SERVER_NAME TASK_ID
 	
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
 * TASK_ID : id of the task as returned by getTasks
 
-Response : 	A server task as JSON encoded object (see example)
+Response : 	A server task as string (see example)
 
 Example :
 
+	./ovh server getTaskProperties ks323462.kimsufi.com 2296596
+	Task ID: 2296596
+	Function: hardReboot
+	Status: done
+	Comment: Reboot asked
+	Last Upadte: 2014-04-01T08:45:00+02:00
+	Start Date: 2014-04-01T08:43:23+02:00
+	Done Date: 2014-04-01T08:45:00+02:00
+
 	
 ### Cancel server task
-	./ovh server SERVER_NAME cancelTask TASK_ID
+	./ovh server cancelTask SERVER_NAME TASK_ID
 	
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
 * TASK_ID : id of the task as returned by getTasks
 
-Response : boolean 	
+Response : "Success task TASK_ID cancelled" on success, error... on error
+
+Examples :
+	
+	./ovh server cancelTask ks323462.kimsufi.com 2297463
+	Success task 2297463 cancelled
+
+	./ovh server cancelTask ks323462.kimsufi.com 2297463
+	Error : [401 You cannot stop this task]	
+	
+	./ovh server cancelTask ks323462.kimsufi.com 2297463
+	Error : [403 This task is already done]
 
 		
 		

@@ -107,6 +107,10 @@ func main() {
 	var err error
 
 	switch cmd.Domain {
+	// /dedicated/server
+	case "server":
+		err = serverHandler(&cmd)
+		break
 	case "ip":
 		err = ipHandler(&cmd)
 		break
