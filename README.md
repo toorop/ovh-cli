@@ -411,7 +411,7 @@ Example :
 	Job ID: 17185893
 	Credits removed: 1
 	
-## SERVER (TODO)
+## SERVER
 #### List your dedicated servers
 	./ovh server list
 	
