@@ -63,6 +63,25 @@ func serverHandler(cmd *Cmd) (err error) {
 		dieOk("")
 		break
 
+	// Get available netboots ID for this server
+	case "availableNetboots":
+		if len(cmd.Args) < 3 {
+			return errors.New("\"server availableNetboots\" needs an argument see doc at https://github.com/Toorop/govh/blob/master/cli/README.md")
+		}
+		var netbootIds []int
+		if len(cmd.Args) == 3 {
+			netbootIds, err = serverR.GetNetboots(strings.ToLower(cmd.Args[2]))
+		} else {
+			netbootIds, err = serverR.GetNetboots(strings.ToLower(cmd.Args[2]), cmd.Args[3])
+		}
+		if err != nil {
+			return
+		}
+		for _, id := range netbootIds {
+			fmt.Println(id)
+		}
+		break
+
 	// Get server tasks
 	case "getTasks":
 		function := "all"
