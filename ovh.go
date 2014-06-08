@@ -1,16 +1,17 @@
 package main
 
 import (
-	"flag"
+	//"flag"
+	"bufio"
 	"fmt"
 	"github.com/Toorop/govh"
+	"github.com/Toorop/govh/ip"
+	"github.com/codegangsta/cli"
 	"github.com/toqueteos/webbrowser"
 	"github.com/wsxiaoys/terminal"
-	//"github.com/wsxiaoys/terminal/color"
-	"bufio"
-	//"encoding/json"
 	"os"
 	"runtime"
+	"strings"
 )
 
 const (
@@ -21,24 +22,14 @@ const (
 )
 
 var (
-	ck  string // consumer key
-	cmd Cmd
+	// ck represents the cocumer key
+	ck string
 )
 
 func init() {
-	flag.StringVar(&ck, "ck", "", "Consumer Key")
-	flag.Parse()
-
-	if len(flag.Args()) > 0 {
-		cmd = Cmd{
-			Domain: flag.Arg(0),
-			Action: flag.Arg(1),
-			Args:   flag.Args(),
-		}
-	}
-
 	// Consumer key
 	ck = os.Getenv("OVH_CONSUMER_KEY")
+	fmt.Println(ck)
 
 	// if No ConsumerKey, request one
 	if len(ck) == 0 {
@@ -101,30 +92,79 @@ func init() {
 	}
 }
 
-// Main
 func main() {
-	//var resp string
-	var err error
+	app := cli.NewApp()
+	app.Name = "ovh"
+	app.Usage = "ovh is a command line interface which interact with OVH services using their API."
+	app.Version = "2.0"
+	app.Author = "Stéphane Depierrepont aka Toorop"
+	app.Email = "toorop@toorop.fr"
+	cli.AppHelpTemplate = `NAME:
+   {{.Name}} - {{.Usage}}
 
-	switch cmd.Domain {
-	// /dedicated/server
-	case "server":
-		err = serverHandler(&cmd)
-		break
-	case "ip":
-		err = ipHandler(&cmd)
-		break
-	case "sms":
-		err = smsHandler(&cmd)
-		break
-	case "help":
-		dieOk("See : https://github.com/Toorop/govh")
-		break
-	default:
-		dieError("This section '", cmd.Domain, "' is not valid or not implemented yet !")
+USAGE:
+   {{.Name}} [section] [subcommand] [arguments]
+
+COMMANDS:
+   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
+   {{end}}
+OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}
+`
+	app.Action = func(c *cli.Context) {
+		println("Hello friend!")
 	}
-	if err != nil {
-		dieError(err)
+
+	// New govh client
+	client := govh.NewClient(OVH_APP_KEY, OVH_APP_SECRET, ck)
+
+	// IP
+	serverCmd := []cli.Command{
+		{
+			Name:        "list",
+			Usage:       "List your IPS",
+			Description: "You can add a IP type as argument. Example: ovh ip list dedicated",
+			Action: func(c *cli.Context) {
+				var resp string
+				// New ip ressource
+				ipr, err := ip.New(client)
+				if err != nil {
+					return
+				}
+				ipType := "all"
+				if c.Args().First() != "" {
+					ipType = strings.ToLower(c.Args().First())
+				}
+				ips, err := ipr.List(ipType)
+				if err != nil {
+					dieError(err)
+				}
+				for _, i := range ips {
+					resp = fmt.Sprintf("%s%s\r\n", resp, i.IP)
+				}
+				if len(resp) > 2 {
+					resp = resp[0 : len(resp)-2]
+				}
+				dieOk(resp)
+			},
+		},
+		{
+			Name:  "remove",
+			Usage: "remove an existing template",
+			Action: func(c *cli.Context) {
+				println("removed task template: ", c.Args().First())
+			},
+		},
 	}
-	//dieOk(resp)
+
+	app.Commands = []cli.Command{
+		{
+			Name:        "ip",
+			Usage:       "Define IP section",
+			Subcommands: serverCmd,
+		},
+	}
+
+	app.Run(os.Args)
 }
