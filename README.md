@@ -1,4 +1,4 @@
-# OVH CLI
+# OVH CLI V2
 
 ## How to use
 
