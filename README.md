@@ -26,39 +26,63 @@ On windows with :
 ## Avalaible commands
 We will consider Linux|MacOs version, just replace *ovh* by *ovh.exe* if you are using Windows.
 
-All WORDS in uppercase are variables, words in lower cases are parts of the command to be executed.
+* WORDS in uppercase are variables
+* words in lower cases are parts of the command to be executed.
+* []: optionnal
+* word...: means one or multiple
+
+You can at any moment get help by adding the --help flag.
+
+Example :
+
+	./ovh ip fw --help
+	NAME:
+   		ovh ip fw - Firewall commands
+
+	USAGE:
+   		ovh ip fw [subsection] command [command options] [arguments...]
+
+	COMMANDS|SUBSECTION:
+   		list		List IPs, of a given block, that are under firewall.
+   		add		Add an IP of IPBLOCK on firewall.
+   		help, h	Shows a list of commands or help for one command
+
+	OPTIONS:
+   		--help, -h	show help
+
+* [IP](http://dl.toorop.fr/softs/ovh_cli/windows/ovh.exe "ovh-cli for windows")
+	* List IP blocks
+* Firewall
+	* List IP under firewall
+	* Add an IP on the firewall
+	* Remove an IP from firewall 	
   
 ## IP
-#### List IP Block
-	./ovh ip list
-Will return all your IP
-You can provide a third argument defining the type of IP returned. For exemple, if you only want IP attached to tour dedicated server, run the command :
+#### List IP blocks
+	./ovh ip list [flag...]
+Will return your IP blocks
 
-	./ovh ip list dedicated
+You can use filter flags :
+
+* --desc: by descrition 
+* --ip: by IP 
+* --routedTo: by routing
+* --type: by type (all|cdn|dedicated|failover|hosted_ssl|housing|loadBalancing|mail|pcc|pci|private|vps|vpn|vrack|xdsl)
+
+Example: if you want IP blocks attached to dedicated server, run the command :
+
+	./ovh ip list --type dedicated
 	
-Available type are :
-
-* cdn
-* dedicated
-* hosted_ssl
-* loadBalancing
-* mail
-* pcc
-* pci
-* vpn
-* vps
-* xdsl
-
  
  
-### FIREWALL
+## FIREWALL
 All commands concerning firewall start with :
 
-	./ovh ip fw
+	./ovh fw
 	
 #### List IPs of an IP block which are under firewall
 
-	./ovh ip fw IPBLOCK list
+	./ovh fw list IPBLOCK
 	
 Where :
 
@@ -68,28 +92,28 @@ Response : Return a list of IPV4, one per line. Or error.
 
 Example :
 	
-	./ovh ip fw 176.31.189.121/32 list
+	./ovh fw list 176.31.189.121/32
 	176.31.189.121	
 	
 #### Add an IP on firewall
 
-	./ovh ip fw IPBLOCK IPV4 add
+	./ovh fw add IPBLOCK IPV4
 	
 Where :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK	
 
-Response : "IPV4 added to firewall" if the command succeed an error otherwise.
+Response : "Done!" if the command succeed an error otherwise.
 	
 Example :
 
-	./ovh ip fw 176.31.189.121/32 176.31.189.121 add
-	176.31.189.121 added to firewall	
+	./ovh fw 176.31.189.121/32 176.31.189.121 add
+	Done!	
 
 #### Remove an IP from firewall
 
-	./ovh ip fw IPBLOCK IPV4 remove
+	./ovh fw remove IPBLOCK IPV4
 
 Where :
 
@@ -105,7 +129,7 @@ Example :
 		
 #### Get Properties of a firewalled IP
 	
-	./ovh ip fw IPBLOCK IPV4 prop
+	./ovh fw getProperties IPBLOCK IPV4 
 
 Where :
 
@@ -116,47 +140,35 @@ Response : Properties on success, one per line. Error otherwise.
 
 Example 
 
-	./ovh ip fw 176.31.189.121/32 176.31.189.121 prop
-	ipOnFirewall: 176.31.189.121
+	./ovh fw getProperties 176.31.189.121/32 176.31.189.121
+	Ip: 176.31.189.121
 	Enabled: false
 	State: ok				
 
-#### Enable firewall
+#### Update IP properties
 
-	./ovh ip fw IPBLOCK IPV4 enable
+	./ovh fw update IPBLOCK IPV4 [flag...]
 
 Where :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK		
 
-Response : "ok" if the command succeed. An error if not.
+Available flags :
+
+* --enabled bool: enabled|disabled IP on firewall 
+
+
+Response : "Done!" if the command succeed. An error if not.
 
 Example :
 	
-	./ovh ip fw 176.31.189.121/32 176.31.189.121 enable
-	ok
-
-
-#### Disable firewall
-
-	./ovh ip fw IPBLOCK IPV4 disable
-
-With :
-
-* IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK		
-
-Response : "ok" if the command succeed. An error if not.
-
-Example :
-	
-	./ovh ip fw 176.31.189.121/32 176.31.189.121 disable
-	ok
+	./ovh fw update 92.222.14.249/32 92.222.14.249 --enabled true
+	Done!
 	
 #### Add a firewall rule
 
-	 ./ovh ip fw IPBLOCK IPV4 addRule 'RULE'
+	 ./ovh fw addRule IPBLOCK IPV4 RULE
 	 
 
 With :
