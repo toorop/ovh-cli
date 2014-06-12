@@ -11,25 +11,34 @@ import (
 	"github.com/wsxiaoys/terminal"
 	"os"
 	"runtime"
-	"strings"
+	//"strings"
 )
 
 const (
-	OVH_APP_KEY    = "SECRET"
-	OVH_APP_SECRET = "SECRET"
-	NL             = "\r\n"
-	TAB            = "\t"
+	NL      = "\r\n"
+	TAB     = "   "
+	NLTAB   = NL + TAB
+	VERSION = "2.0"
 )
 
 var (
 	// ck represents the cocumer key
 	ck string
+	// region represents API region.
+	// EU (default) or CA
+	region string
+	// err
+	err error
+	// IP Ressource
+	ipr *ip.IpRessource
 )
 
 func init() {
+	// region
+	region = os.Getenv("OVH_REGION")
+
 	// Consumer key
 	ck = os.Getenv("OVH_CONSUMER_KEY")
-	fmt.Println(ck)
 
 	// if No ConsumerKey, request one
 	if len(ck) == 0 {
@@ -57,13 +66,13 @@ func init() {
 			} else {
 				fmt.Println("export OVH_CONSUMER_KEY=your_consumer_key", NL)
 			}
-			fmt.Println("and restart ovh CLI application.\r\n")
+			fmt.Println("and restart ovh CLI application.", NL)
 			os.Exit(0)
 		}
 
-		ck, link, err := govh.AuthGetConsumerKey(OVH_APP_KEY)
+		ck, link, err := govh.AuthGetConsumerKey(getAppKey(region), region)
 		if err != nil {
-			panic(err)
+			dieError(err)
 		}
 		fmt.Print("\r\nYour consumer key is : ")
 		if runtime.GOOS != "windows" {
@@ -74,7 +83,7 @@ func init() {
 
 		fmt.Println("Now you need to validate it :")
 		if runtime.GOOS != "windows" {
-			fmt.Printf("\t- If you have a browser available on this machine it will open to the validation page.\n\t- If not copy and paste the link below in a browser to validate your key :\r\n\r\n%s\r\n", link)
+			fmt.Printf("\t- If you have a browser available on this machine it will open to the validation page.\n\t- If not, copy and paste the link below in a browser to validate your key :\r\n\r\n%s\r\n", link)
 			webbrowser.Open(link)
 		} else {
 			fmt.Printf("To do it just copy and paste the link below in a browser and follow instructions on OVH website :\r\n\r\n%s\r\n", link)
@@ -82,11 +91,10 @@ func init() {
 
 		fmt.Println("\r\nWhen it will be done run the following command : \r\n")
 		if runtime.GOOS == "windows" {
-			fmt.Printf("SET OVH_CONSUMER_KEY=%s\r\n", ck)
+			fmt.Printf("SET OVH_CONSUMER_KEY=%s%s%s", ck, NL, NL)
 		} else {
-			fmt.Printf("export OVH_CONSUMER_KEY=%s\r\n", ck)
+			fmt.Printf("export OVH_CONSUMER_KEY=%s%s%s", ck, NL, NL)
 		}
-
 		fmt.Println("and restart ovh CLI application.\r\n")
 		os.Exit(0)
 	}
@@ -95,74 +103,69 @@ func init() {
 func main() {
 	app := cli.NewApp()
 	app.Name = "ovh"
-	app.Usage = "ovh is a command line interface which interact with OVH services using their API."
-	app.Version = "2.0"
+	app.Usage = "ovh is a command line interface which interact with OVH API."
+	app.Version = VERSION
 	app.Author = "Stéphane Depierrepont aka Toorop"
 	app.Email = "toorop@toorop.fr"
 	cli.AppHelpTemplate = `NAME:
    {{.Name}} - {{.Usage}}
 
 USAGE:
-   {{.Name}} [section] [subcommand] [arguments]
+   {{.Name}} [section] [subsection...] [command] [arguments]
 
-COMMANDS:
+SECTIONS:
    {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
    {{end}}
 OPTIONS:
    {{range .Flags}}{{.}}
    {{end}}
 `
-	app.Action = func(c *cli.Context) {
-		println("Hello friend!")
-	}
+
+	cli.CommandHelpTemplate = `NAME:
+   {{.Name}} - {{.Usage}}
+
+USAGE:
+   {{.Description}}
+
+OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}
+`
+
+	cli.SubcommandHelpTemplate = `NAME:
+   {{.Name}} - {{.Usage}}
+
+USAGE:
+   {{.Name}} [subsection] command [command options] [arguments...]
+
+COMMANDS|SUBSECTION:
+   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
+   {{end}}
+OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}
+`
 
 	// New govh client
-	client := govh.NewClient(OVH_APP_KEY, OVH_APP_SECRET, ck)
+	client := govh.NewClient(getAppKey(region), getAppSecret(region), ck, region)
 
-	// IP
-	serverCmd := []cli.Command{
-		{
-			Name:        "list",
-			Usage:       "List your IPS",
-			Description: "You can add a IP type as argument. Example: ovh ip list dedicated",
-			Action: func(c *cli.Context) {
-				var resp string
-				// New ip ressource
-				ipr, err := ip.New(client)
-				if err != nil {
-					return
-				}
-				ipType := "all"
-				if c.Args().First() != "" {
-					ipType = strings.ToLower(c.Args().First())
-				}
-				ips, err := ipr.List(ipType)
-				if err != nil {
-					dieError(err)
-				}
-				for _, i := range ips {
-					resp = fmt.Sprintf("%s%s\r\n", resp, i.IP)
-				}
-				if len(resp) > 2 {
-					resp = resp[0 : len(resp)-2]
-				}
-				dieOk(resp)
-			},
-		},
-		{
-			Name:  "remove",
-			Usage: "remove an existing template",
-			Action: func(c *cli.Context) {
-				println("removed task template: ", c.Args().First())
-			},
-		},
+	// default action: help
+	app.Action = func(c *cli.Context) {
+		cli.ShowAppHelp(c)
 	}
 
+	// Main  getFwCmds
 	app.Commands = []cli.Command{
 		{
 			Name:        "ip",
-			Usage:       "Define IP section",
-			Subcommands: serverCmd,
+			Usage:       "IP section",
+			Description: "IP commands",
+			Subcommands: getIpCmds(client),
+		}, {
+			Name:        "fw",
+			Usage:       "Firewall subsection",
+			Description: "Firewall commands",
+			Subcommands: getFwCmds(client),
 		},
 	}
 
