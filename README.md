@@ -35,22 +35,27 @@ You can at any moment get help by adding the --help flag.
 
 Example :
 
-	./ovh ip fw --help
+	$ ./ovh fw --help
 	NAME:
-   		ovh ip fw - Firewall commands
+   		ovh fw - Firewall commands
 
 	USAGE:
-   		ovh ip fw [subsection] command [command options] [arguments...]
+   		ovh fw [subsection] command [command options] [arguments...]
 
 	COMMANDS|SUBSECTION:
-   		list		List IPs, of a given block, that are under firewall.
-   		add		Add an IP of IPBLOCK on firewall.
-   		help, h	Shows a list of commands or help for one command
+   		list			List IPs, of a given block, that are under firewall.
+   		add				Add an IP of IPBLOCK on firewall.
+   		remove			Remove an IP of IPBLOCK from firewall.
+   		getProperties	Get properties of an IP on the firewall.
+   		update			Update an IP on the firewall.
+   		addRule			Add a new rule on an IP.
+   		removeRule		Remove a firwall rule.
+   		help, h			Shows a list of commands or help for one command
 
 	OPTIONS:
    		--help, -h	show help
-
-* [IP](http://dl.toorop.fr/softs/ovh_cli/windows/ovh.exe "ovh-cli for windows")
+   
+* IP
 	* List IP blocks
 * Firewall
 	* List IP under firewall
