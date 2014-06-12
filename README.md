@@ -59,7 +59,7 @@ Example :
   
 ## IP
 #### List IP blocks
-	./ovh ip list [flag...]
+	./ovh ip list [--flag...]
 Will return your IP blocks
 
 You can use filter flags :
@@ -147,7 +147,7 @@ Example
 
 #### Update IP properties
 
-	./ovh fw update IPBLOCK IPV4 [flag...]
+	./ovh fw update IPBLOCK IPV4 [--flag...]
 
 Where :
 
@@ -168,56 +168,41 @@ Example :
 	
 #### Add a firewall rule
 
-	 ./ovh fw addRule IPBLOCK IPV4 RULE
+	 ./ovh fw addRule IPBLOCK IPV4 [--flag...]
 	 
 
-With :
+With:
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK	
-* RULE : a JSON encoded rule object. See below.
 
-##### JSON encoded rule format definition
+Flags:
 
-Properties of the rule object are (* = requiered) :
-
-* action* : Action of this rule. "permit" ot "deny".
-* protocol* : "icmp" or "ipv4" or "tcp" or "udp"
-* sequence* : sequence number of the rule (rule are excecuted from sequence=0 to sequence=n)
-* source : Source ip for the rule. Any if not set.
-* sourcePort : Source port range for the rule. Only with TCP/UDP protocol. It's an object with two properties :
-	* from : first port
-	* to : last port
-* destinationPort : Destination port range for the rule. Only with TCP/UDP protocol. It's an object with two properties :
-	* from : first port
-	* to : last port
-* tcpOption : It's a object with muliple boolean properties, if a propertie is set to true, the flag will be enabled :
-	* ack
-	* established
-	* fin
-	* psh
-	* rst
-	* syn
-	* urg
-* udpOption	: It's a object with muliple boolean properties, if a propertie is set to true, the flag will be enabled :
-	* fragments 
-	 
+ * --action: Action on this rule (deny|permit). Required.
+ * --sequence: Sequence number of your rule. Required.
+ * --protocol: Network protocol (ah|esp|gre|icmp|ipv4|tcp|udp). Requiered.
+ * --fromPort: Source port for your rule. Only with TCP/UDP protocol.
+ * --fromIp: Source ip for your rule. Any if not set.
+ * -- toPort: Destination port for your rule. Only with TCP/UDP protocol.
+ * --tcpFragment: Can only be used with TCP protocol (true|false).
+ * --tcpOption: Can only be used with TCP protocol (established|syn)
 
 Examples :	 
+Add a rule	which deny all incoming udp traffic:
 	 
-	  ./ovh ip fw 176.31.189.121/32 176.31.189.121 addRule '{"action":"deny","protocol":"udp","sequence":"0"}'
+	  ./ovh fw addRule 92.222.14.249/32 92.222.14.249  --sequence 0 --action deny --protocole udp
 	  
-Will add a rule	which deny all incoming udp traffic 
+Add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
 
-	  ./ovh ip fw 176.31.189.121/32 176.31.189.121 addRule '{"action": "permit", "destinationPort": {"from": 22, "to": 22},"protocol":"tcp","sequence": "1","source": "46.105.152.56/32"}'
+	./ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 0 --action permit --toPort 22 --fromIp 46.105.152.56/32 --protocol tcp  
 
-Will add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
+Add a rule wich deny any connection to port 22 (SSH)
 
-	./ovh ip fw 176.31.189.121/32 176.31.189.121 addRule '{"action": "deny","destinationPort": {"to": 22,"from": 22},"protocol": "tcp","sequence": "2"}'
+	./ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 1 --action deny --toPort 22 --protocol tcp
 	
 Will add a rule wich deny any connection to port 22 (SSH).
 
-Rules are tested from sequence 0 to sequence n. When a rule matches it is applied and no other rules are tested. That mean with those examples that only IP 46.105.152.56 will be able to connect thru SSH to IP 176.31.189.121.
+Rules are tested from sequence 0 to sequence n. When a rule matches it is applied and no other rules are tested. That mean with those examples that only IP 46.105.152.56 will be able to connect thru SSH to IP 92.222.14.249.
 	  	
 	
 #### Remove a firewall rule

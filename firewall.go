@@ -10,6 +10,11 @@ import (
 
 // getFwCmds return commands for firewall subsection
 func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
+	ipr, err := ip.New(client)
+	if err != nil {
+		return
+	}
+
 	fwCmds = []cli.Command{
 		{
 			Name:        "list",
@@ -19,9 +24,6 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				if len(c.Args()) == 0 {
 					dieBadArgs()
-				}
-				if ipr, err = ip.New(client); err != nil {
-					return
 				}
 				ips, err := ipr.FwListIpOfBlock(ip.IpBlock{c.Args().First(), ""})
 				handleErrFromOvh(err)
@@ -37,9 +39,6 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Description: "ovh fw add IPBLOCK IP" + NLTAB + "Example: ovh fw add 92.222.14.249/32 92.222.14.249",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				if ipr, err = ip.New(client); err != nil {
-					return
-				}
 				err := ipr.FwAddIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
 				handleErrFromOvh(err)
 				dieDone()
@@ -51,9 +50,6 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Description: "ovh fw remove IPBLOCK IP" + NLTAB + "Example: ovh fw remove 92.222.14.249/32 92.222.14.249",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				if ipr, err = ip.New(client); err != nil {
-					return
-				}
 				err := ipr.FwRemoveIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
 				handleErrFromOvh(err)
 				dieDone()
@@ -65,9 +61,6 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Description: "ovh fw getProperties IPBLOCK IP " + NLTAB + "Example: ovh fw getProperties 92.222.14.249/32 92.222.14.249",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				if ipr, err = ip.New(client); err != nil {
-					return
-				}
 				p, err := ipr.FwGetIpProperties(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
 				handleErrFromOvh(err)
 				dieOk(fmt.Sprintf("Ip: %s%sEnabled: %t%sState: %s", p.Ip, NL, p.Enabled, NL, p.State))
@@ -83,9 +76,6 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
 				fEnabled := c.Bool("enabled")
-				if ipr, err = ip.New(client); err != nil {
-					return
-				}
 				err := ipr.FwUpdateIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), fEnabled)
 				handleErrFromOvh(err)
 				dieDone()
@@ -102,36 +92,82 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				cli.StringFlag{"fromPort", "", "Source port for your rule. Only with TCP/UDP protocol"},
 				cli.StringFlag{"fromIp", "", "Source ip for your rule. Any if not set."},
 				cli.StringFlag{"toPort", "", "Destination port for your rule. Only with TCP/UDP protocol."},
-				cli.StringFlag{"tcpOptionFragment", "", "Can only be used with TCP protocol (true|false)"},
+				cli.StringFlag{"tcpFragment", "", "Can only be used with TCP protocol (true|false)"},
 				cli.StringFlag{"tcpOption", "", "Can only be used with TCP protocol (established|syn)"},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
+				rule := ip.FwRule2Add{}
 
 				// action
-				action := strings.ToLower(c.String("action"))
-				if len(action) == 0 || action != "deny" || action != "permit" {
+				if !c.IsSet("action") {
 					dieBadArgs()
 				}
+				action := strings.ToLower(c.String("action"))
+				if !inSliceStr(action, []string{"deny", "permit"}) {
+					dieBadArgs()
+				}
+				rule.Action = action
 
 				// sequence
 				if !c.IsSet("sequence") {
 					dieBadArgs()
 				}
 				sequence := c.Int("sequence")
+				rule.Sequence = sequence
 
 				// protocol
-				avProtocols := []string{"ah","esp","gre","icmp","ipv4","tcp","udp"}
-				ok := func(search string, in []string)
-				protocol := c.String("protocol")
-				if len(protocol)==0 || 
-
-				if ipr, err = ip.New(client); err != nil {
-					return
+				if !c.IsSet("protocol") {
+					dieBadArgs()
 				}
-				p, err := ipr.FwGetIpProperties(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+				protocol := strings.ToLower(c.String("protocol"))
+				if !inSliceStr(protocol, []string{"ah", "esp", "gre", "icmp", "ipv4", "tcp", "udp"}) {
+					dieBadArgs()
+				}
+				rule.Protocol = protocol
+
+				// fromPort
+				if c.IsSet("fromPort") {
+					rule.FromPort = c.Int("fromPort")
+				}
+
+				// fromIP
+				if c.IsSet("fromIp") {
+					rule.FromIp = c.String("fromIp")
+				}
+
+				// toPort
+				if c.IsSet("toPort") {
+					rule.ToPort = c.Int("toPort")
+				}
+
+				// fwTcpOption
+				fwTcpOption := ip.FwTcpOption{}
+				flagFwTcpOption := false
+
+				// tcpOptionFragment
+				if c.IsSet("tcpFragment") {
+					fwTcpOption.Fragment = c.Bool("tcpFragment")
+					flagFwTcpOption = true
+				}
+
+				// tcpOption
+				if c.IsSet("tcpOption") {
+					tcpOption := c.String("tcpOption")
+					if !inSliceStr(tcpOption, []string{"established", "syn"}) {
+						dieBadArgs()
+					}
+					fwTcpOption.Option = tcpOption
+					flagFwTcpOption = true
+
+				}
+				if flagFwTcpOption {
+					rule.TcpOption = &fwTcpOption
+				}
+
+				err = ipr.FwAddRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), rule)
 				handleErrFromOvh(err)
-				dieOk(fmt.Sprintf("Ip: %s%sEnabled: %t%sState: %s", p.Ip, NL, p.Enabled, NL, p.State))
+				dieDone()
 			},
 		},
 	}

@@ -10,6 +10,12 @@ import (
 
 // getIpCmds return commands for Ip section
 func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
+	ipr, err := ip.New(client)
+	if err != nil {
+		return
+	}
+
+	// Ip commands
 	ipCmds = []cli.Command{
 		// list
 		{
@@ -31,9 +37,6 @@ func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
 					fType = ""
 				}
 
-				if ipr, err = ip.New(client); err != nil {
-					return
-				}
 				ips, err := ipr.List(fDesc, fIp, fRoutedTo, fType)
 				handleErrFromOvh(err)
 				for _, i := range ips {
@@ -49,9 +52,6 @@ func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
 			Description: "ovh ip getProperties IPBLOCK" + NLTAB + "Example: ovh ip getProperties 91.121.228.135/32",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
-				if ipr, err = ip.New(client); err != nil {
-					return
-				}
 				properties, err := ipr.GetIpProperties(c.Args().First())
 				handleErrFromOvh(err)
 				dieOk(fmt.Sprintf("IP: %s%sType: %s%sDescription: %s%sRouted to: %s", properties.Ip, NL, properties.Type, NL, properties.Description, NL, properties.RoutedTo.ServiceName))
@@ -72,9 +72,6 @@ func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
 				// check if there is something to update
 				if len(fDesc) == 0 {
 					dieDone()
-				}
-				if ipr, err = ip.New(client); err != nil {
-					return
 				}
 				err := ipr.UpdateProperties(c.Args().First(), fDesc)
 				if err != nil {

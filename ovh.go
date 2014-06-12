@@ -5,7 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/Toorop/govh"
-	"github.com/Toorop/govh/ip"
+	//"github.com/Toorop/govh/ip"
 	"github.com/codegangsta/cli"
 	"github.com/toqueteos/webbrowser"
 	"github.com/wsxiaoys/terminal"
@@ -28,9 +28,9 @@ var (
 	// EU (default) or CA
 	region string
 	// err
-	err error
+	//err error
 	// IP Ressource
-	ipr *ip.IpRessource
+	//ipr *ip.IpRessource
 )
 
 func init() {

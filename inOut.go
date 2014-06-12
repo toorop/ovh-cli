@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/wsxiaoys/terminal"
 	"os"
-	//"runtime"
+	"runtime/debug"
 )
 
 func dieError(v ...interface{}) {
@@ -14,13 +13,7 @@ func dieError(v ...interface{}) {
 		fmt.Printf("%v", vv)
 	}
 	fmt.Println("")
-	/*} else {
-		terminal.Stdout.Color("r").Print("Error : ")
-		for _, vv := range v {
-			terminal.Stdout.Print(vv)
-		}
-		terminal.Stdout.Nl().Reset()
-	}*/
+	debug.PrintStack()
 	os.Exit(1)
 }
 
@@ -55,6 +48,6 @@ func dieDone() {
 	dieOk("Done!")
 }
 
-func debug(v ...interface{}) {
+/*func debug(v ...interface{}) {
 	terminal.Stdout.Color("y").Print("Debug : ", v).Nl().Reset()
-}
+}*/

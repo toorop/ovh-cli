@@ -17,7 +17,7 @@ func handleErrFromOvh(err error) {
 }
 
 // inslice return true if search is in slice, false otherwise
-func inSlice(search interface{}, in []interface{}) bool {
+func inSliceStr(search string, in []string) bool {
 	for _, v := range in {
 		if v == search {
 			return true
