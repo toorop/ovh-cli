@@ -174,7 +174,7 @@ Example :
 	ovh fw update 92.222.14.249/32 92.222.14.249 --enabled true
 	Done!
 	
-### List firewall rules
+#### List firewall rules
 
 	ovh fw listRules IPBLOCK IPV4 [--state creationPending|ok|removalPending]	
 	
@@ -276,17 +276,20 @@ Example :
 	Fragments: false
 
 
-## WARNING : commands below are not implemented yet
+
 	
 ### SPAM
 #### List spamming IP of an IP block
 
-	./ovh ip spam IPBLOCK listSpammingIp STATE	
+	./ovh spam listIp IPBLOCK [--state (blockedForSpam|unblocked|unblocking)]	
 
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* STATE (optional) : current state of IP to list
+
+Flags:
+
+* --state (optional) : current state of IP to list
 	* blockeForSpam : Currently blocked for spam
 	* unblocked : previously blocked
 	* unblocking : an unblocking quiery have been made
@@ -295,10 +298,12 @@ Response : A list of IPv4 (one per line) or error.
 
 Example :
 
-	$ ./ovh ip spam 178.33.223.32/28 listSpammingIp
+	$ ./ovh spam listIp 178.33.223.32/28 --state unblocked
 	178.33.223.41
 	178.33.223.42
 	178.33.223.43
+
+## WARNING : commands below are not (re)implemented yet
 	
 #### Get more info about a spamming IP
 

@@ -159,13 +159,18 @@ OPTIONS:
 		{
 			Name:        "ip",
 			Usage:       "IP section",
-			Description: "IP commands",
+			Description: "Commands about IP",
 			Subcommands: getIpCmds(client),
 		}, {
 			Name:        "fw",
 			Usage:       "Firewall subsection",
-			Description: "Firewall commands",
+			Description: "Commands OVH firewall",
 			Subcommands: getFwCmds(client),
+		}, {
+			Name:        "spam",
+			Usage:       "Spam subsection",
+			Description: "Cmmands about OVH antispam protection",
+			Subcommands: getSpamCmds(client),
 		},
 	}
 
