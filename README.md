@@ -324,40 +324,44 @@ Example :
 	IP: 91.121.228.135
 	State: unblocked
 	
-## WARNING : commands below are not (re)implemented yet	
+
  		
 #### Unblock a blocked IP
 
-	./ovh ip spam IPBLOCK IPV4 unblock 
+	ovh spam unblock IPBLOCK IPV4
 
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK	
 
-Response : "ok" on success or error.
+Response : "Done!" on success or error.
 
 Exemple :
 	
-	./ovh ip spam 178.33.223.32/28 178.33.223.42 unblock
+	ovh spam unblock 178.33.223.32/28 178.33.223.42
 	ok
 			 		
 
-#### Get statistics about a spamming IP
+#### Get statistics about a spamming IP for a time period
 
-	./ovh ip spam IPBLOCK IPV4 stats TS_FROM TS_TO
+	ovh spam getStats IPBLOCK IPV4 --from UNIX_TIMESTAMP_START --to UNIX_TIMESTAMP_STOP 
 	
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK		
-* TS_FROM & TS_TO : Unix timestamp representing a period
+
+Flags
+
+* --from: Unix timestamp representing the begining of the peiod (required).
+* --to: Uni timestamp representing the end of the period (required).
 
 Response : formated statistics (see example) or error
 
 Example :
 
-	./ovh ip spam 178.33.223.32/28 178.33.223.42 stats 1385251200 1387882630
+	ovh spam getStats 178.33.223.32/28 178.33.223.42 --from 1385251200 --to 1387882630
 	Blocked for the last time: 12 Dec 13 22:52 +0100
 	Number of emails sent: 141
 	Number of spams sent: 124
@@ -383,16 +387,18 @@ Example :
 	
 #### Get IP which are currently blocked for spam (helper)
 
-	./ovh ip getBlockedForSpam
+	./ovh spam getBlocked
 	
 Response : List of blocked IP, one per line or error
 
 Example :
 
-	./ovh ip getBlockedForSpam
+	./ovh spams getBlocked
 	178.33.223.41
 	178.33.223.42
 	178.33.223.43	
+	
+## WARNING : commands below are not (re)implemented yet		
 	
 ## SMS
 #### List SMS services
