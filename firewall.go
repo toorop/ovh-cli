@@ -83,6 +83,29 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			},
 		},
 		{
+			Name:        "listRules",
+			Usage:       "Return a list ao rule sequences.",
+			Description: "ovh fw listRule IPBLOCK IP [--state]" + NLTAB + "Example: ovh fw listRule 92.222.14.249/32 92.222.14.249 --state ok",
+			Flags: []cli.Flag{
+				cli.StringFlag{"state", "", "Filter on state (creationPending|ok|removalPending)."},
+			},
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 2)
+				var sequences []int
+				if c.IsSet("state") {
+					fState := c.String("state")
+					sequences, err = ipr.FwListRules(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), fState)
+				} else {
+					sequences, err = ipr.FwListRules(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+				}
+				handleErrFromOvh(err)
+				for _, seq := range sequences {
+					fmt.Println(seq)
+				}
+				dieOk()
+			},
+		},
+		{
 			Name:        "addRule",
 			Usage:       "Add a new rule on an IP.",
 			Description: "ovh fw addRule [--flag...] IPBLOCK IP  " + NLTAB + "Example: ovh fw addRule --action deny --protocol tcp --toPort 22 --sequence 0 92.222.14.249/32 92.222.14.249",
@@ -93,7 +116,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				cli.StringFlag{"fromPort", "", "Source port for your rule. Only with TCP/UDP protocol"},
 				cli.StringFlag{"fromIp", "", "Source ip for your rule. Any if not set."},
 				cli.StringFlag{"toPort", "", "Destination port for your rule. Only with TCP/UDP protocol."},
-				cli.StringFlag{"tcpFragment", "", "Can only be used with TCP protocol (true|false)"},
+				cli.StringFlag{"tcpFragments", "", "Can only be used with TCP protocol (true|false)"},
 				cli.StringFlag{"tcpOption", "", "Can only be used with TCP protocol (established|syn)"},
 			},
 			Action: func(c *cli.Context) {
@@ -147,8 +170,8 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				flagFwTcpOption := false
 
 				// tcpOptionFragment
-				if c.IsSet("tcpFragment") {
-					fwTcpOption.Fragment = c.Bool("tcpFragment")
+				if c.IsSet("tcpFragments") {
+					fwTcpOption.Fragments = c.Bool("tcpFragments")
 					flagFwTcpOption = true
 				}
 
@@ -167,21 +190,35 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				}
 				handleErrFromOvh(ipr.FwAddRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), rule))
 				dieDone()
-				// How to restrict SSH access to your #OVH server in 2 lines #ovhcli #dev #teasing
 			},
 		},
 		{
 			Name:        "removeRule",
 			Usage:       "Remove a firwall rule.",
-			Description: "ovh fw removeRule IPBLOCK IP RULE_ID" + NLTAB + "Example: ovh fw removeRule 92.222.14.249/32 92.222.14.249 0",
+			Description: "ovh fw removeRule IPBLOCK IP SEQUENCE" + NLTAB + "Example: ovh fw removeRule 92.222.14.249/32 92.222.14.249 0",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 3)
-				rule, err := strconv.ParseInt(c.Args().Get(2), 10, 16)
+				sequence, err := strconv.ParseInt(c.Args().Get(2), 10, 16)
 				if err != nil {
 					dieError(err)
 				}
-				handleErrFromOvh(ipr.FwRemoveRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), int(rule)))
+				handleErrFromOvh(ipr.FwRemoveRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), int(sequence)))
 				dieDone()
+			},
+		},
+		{
+			Name:        "getRuleProperties",
+			Usage:       "Get properties of firewall rule.",
+			Description: "ovh fw getRuleProperties IPBLOCK IP SEQUENCE " + NLTAB + "Example: ovh fw getRuleProperties 92.222.14.249/32 92.222.14.249 0",
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 3)
+				sequence, err := strconv.ParseInt(c.Args().Get(2), 10, 16)
+				if err != nil {
+					dieError(err)
+				}
+				p, err := ipr.FwGetRuleProperties(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), int(sequence))
+				handleErrFromOvh(err)
+				dieOk(fmt.Sprintf("Sequence: %d%sCreated: %s%sProtocol: %s%sFromIp: %s%sFromPort: %s%sToIP: %s%sToPort: %s%sAction: %s%sRule:%s%sState: %s%sTcpOption: %s%sFragments: %t", p.Sequence, NL, p.CreationDate, NL, p.Protocol, NL, p.FromIp, NL, p.FromPort, NL, p.ToIp, NL, p.ToPort, NL, p.Action, NL, p.Rule, NL, p.State, NL, p.TcpOption, NL, p.Fragments))
 			},
 		},
 	}

@@ -171,14 +171,32 @@ Response : "Done!" if the command succeed. An error if not.
 
 Example :
 	
-	./ovh fw update 92.222.14.249/32 92.222.14.249 --enabled true
+	ovh fw update 92.222.14.249/32 92.222.14.249 --enabled true
 	Done!
+	
+### List firewall rules
+
+	ovh fw listRules IPBLOCK IPV4 [--state creationPending|ok|removalPending]	
+	
+With:
+
+* IPBLOCK : an ip block given by "ovh ip list"
+* IPV4 : an IP v4 from IPBLOCK	
+
+Flags:
+
+ * --state: State of the rule (creationPending|ok|removalPending)
+ 
+Example:
+
+	ovh fw listRules 92.222.14.249/32 92.222.14.249 --state ok
+	1
+	0	 	
 	
 #### Add a firewall rule
 
-	 ./ovh fw addRule IPBLOCK IPV4 [--flag...]
+	 ovh fw addRule IPBLOCK IPV4 [--flag...]
 	 
-
 With:
 
 * IPBLOCK : an ip block given by "ovh ip list"
@@ -198,7 +216,7 @@ Flags:
 Examples :	 
 Add a rule	which deny all incoming udp traffic:
 	 
-	  ./ovh fw addRule 92.222.14.249/32 92.222.14.249  --sequence 0 --action deny --protocole udp
+	  ovh fw addRule 92.222.14.249/32 92.222.14.249  --sequence 0 --action deny --protocole udp
 	  
 Add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
 
@@ -206,7 +224,7 @@ Add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
 
 Add a rule wich deny any connection to port 22 (SSH)
 
-	./ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 1 --action deny --toPort 22 --protocol tcp
+	ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 1 --action deny --toPort 22 --protocol tcp
 	
 Will add a rule wich deny any connection to port 22 (SSH).
 
@@ -215,7 +233,7 @@ Rules are tested from sequence 0 to sequence n. When a rule matches it is applie
 	
 #### Remove a firewall rule
 
-	 ./ovh fw removeRule IPBLOCK IPV4 SEQUENCE
+	 ovh fw removeRule IPBLOCK IPV4 SEQUENCE
 
 With :
 
@@ -225,7 +243,7 @@ With :
 	 
 Example :
 
-	./ovh fw removeRule 92.222.14.249/32 92.222.14.249 1
+	ovh fw removeRule 92.222.14.249/32 92.222.14.249 1
 	Done!
 
 	
@@ -237,24 +255,28 @@ With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK	
-* SEQUENCE : Seqeunce number of the rule
+* SEQUENCE : Sequence number of the rule
 
 Response : Formatted rule (see example) or error.
 
 Example :
 
-	./ovh ip fw 176.31.189.121/32 176.31.189.121 getRule 1
-	Protocol: tcp
-	Source: 8.8.8.8/32
-	DestinationPort: eq 25
+	ovh fw getRuleProperties 92.222.14.249/32 92.222.14.249 1
 	Sequence: 1
-	Options: urg psh ack syn fin rst
-	Destination: 176.31.189.121/32
-	Rule: permit tcp 8.8.8.8/32 range 10 20 176.31.189.121/32 eq 25 urg psh ack syn fin rst
-	SourcePort: range 10 20
-	State: ok
-	CreationDate: 2013-12-20T17:45:07+01:00
+	Created: 2014-06-02 07:49:42 +0000 UTC
+	Protocol: tcp
+	FromIp: 46.105.152.55/32
+	FromPort:
+	ToIP: 92.222.14.249/32
+	ToPort: eq 23
 	Action: permit
+	Rule:permit tcp 46.105.152.55/32 92.222.14.249/32 eq 23 syn
+	State: ok
+	TcpOption: syn
+	Fragments: false
+
+
+## WARNING : commands below are not implemented yet
 	
 ### SPAM
 #### List spamming IP of an IP block
