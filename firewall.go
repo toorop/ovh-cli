@@ -5,6 +5,7 @@ import (
 	"github.com/Toorop/govh"
 	"github.com/Toorop/govh/ip"
 	"github.com/codegangsta/cli"
+	"strconv"
 	"strings"
 )
 
@@ -164,9 +165,22 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				if flagFwTcpOption {
 					rule.TcpOption = &fwTcpOption
 				}
-
-				err = ipr.FwAddRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), rule)
-				handleErrFromOvh(err)
+				handleErrFromOvh(ipr.FwAddRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), rule))
+				dieDone()
+				// How to restrict SSH access to your #OVH server in 2 lines #ovhcli #dev #teasing
+			},
+		},
+		{
+			Name:        "removeRule",
+			Usage:       "Remove a firwall rule.",
+			Description: "ovh fw removeRule IPBLOCK IP RULE_ID" + NLTAB + "Example: ovh fw removeRule 92.222.14.249/32 92.222.14.249 0",
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 3)
+				rule, err := strconv.ParseInt(c.Args().Get(2), 10, 16)
+				if err != nil {
+					dieError(err)
+				}
+				handleErrFromOvh(ipr.FwRemoveRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), int(rule)))
 				dieDone()
 			},
 		},

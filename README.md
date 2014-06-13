@@ -215,24 +215,23 @@ Rules are tested from sequence 0 to sequence n. When a rule matches it is applie
 	
 #### Remove a firewall rule
 
-	 ./ovh ip fw IPBLOCK IPV4 remRule SEQUENCE
+	 ./ovh fw removeRule IPBLOCK IPV4 SEQUENCE
 
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 * IPV4 : an IP v4 from IPBLOCK	
 * SEQUENCE : Seqeunce number of the rule
-
-Response : "Rule SEQUENE removed" on success or error.	 
+	 
 Example :
 
-	./ovh ip fw 176.31.189.121/32 176.31.189.121 remRule 1
-	Rule 1 removed	
+	./ovh fw removeRule 92.222.14.249/32 92.222.14.249 1
+	Done!
 
 	
 #### Get info about a firewall rule
 	
-	./ovh ip fw IPBLOCK IPV4 getRule SEQUENCE
+	./ovh fw getRuleProperties IPBLOCK IPV4 SEQUENCE
 	
 With :
 
