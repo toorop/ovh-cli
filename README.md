@@ -220,7 +220,7 @@ Add a rule	which deny all incoming udp traffic:
 	  
 Add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
 
-	./ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 0 --action permit --toPort 22 --fromIp 46.105.152.56/32 --protocol tcp  
+	ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 0 --action permit --toPort 22 --fromIp 46.105.152.56/32 --protocol tcp  
 
 Add a rule wich deny any connection to port 22 (SSH)
 
@@ -249,7 +249,7 @@ Example :
 	
 #### Get info about a firewall rule
 	
-	./ovh fw getRuleProperties IPBLOCK IPV4 SEQUENCE
+	ovh fw getRuleProperties IPBLOCK IPV4 SEQUENCE
 	
 With :
 
@@ -281,7 +281,7 @@ Example :
 ### SPAM
 #### List spamming IP of an IP block
 
-	./ovh spam listIp IPBLOCK [--state (blockedForSpam|unblocked|unblocking)]	
+	ovh spam listIp IPBLOCK [--state (blockedForSpam|unblocked|unblocking)]	
 
 With :
 
@@ -298,16 +298,16 @@ Response : A list of IPv4 (one per line) or error.
 
 Example :
 
-	$ ./ovh spam listIp 178.33.223.32/28 --state unblocked
+	$ ovh spam listIp 178.33.223.32/28 --state unblocked
 	178.33.223.41
 	178.33.223.42
 	178.33.223.43
 
-## WARNING : commands below are not (re)implemented yet
+
 	
 #### Get more info about a spamming IP
 
-	./ovh ip spam IPBLOCK IPV4 details
+	ovh spam getProperties IPBLOCK IPV4 
 	
 With :
 
@@ -318,11 +318,13 @@ Response : Formated info (see example) or error
 
 Example :
 
-	./ovh ip spam 178.33.223.32/28 178.33.223.43 details
-	Time: 3600
-	Date: 2013-12-12T22:53:14+01:00
-	IpSpamming: 178.33.223.43
-	State: unblocked	
+	ovh spam getProperties 91.121.228.135/32 91.121.228.135
+	Blocked since (duration sec):0
+	Last time: 2013-12-28T21:51:37+01:00
+	IP: 91.121.228.135
+	State: unblocked
+	
+## WARNING : commands below are not (re)implemented yet	
  		
 #### Unblock a blocked IP
 

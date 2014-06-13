@@ -17,7 +17,7 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 	spamCmds = []cli.Command{
 		{
 			Name:        "listIp",
-			Usage:       "List IP which send (or have sent) spam",
+			Usage:       "List IP which send (or have sent) spam.",
 			Description: "ovh spam listIp IPBLOCK [--state ]" + NLTAB + "Example: ovh spam listIp 91.121.228.135/32 --state unblocked",
 			Flags: []cli.Flag{
 				cli.StringFlag{"state", "", "The state of the IP (blockedForSpam|unblocked|unblocking)."},
@@ -37,6 +37,16 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 					fmt.Println(ip)
 				}
 				dieOk()
+			},
+		}, {
+			Name:        "getProperties",
+			Usage:       "Get properties of a spamming IP.",
+			Description: "ovh spam getProperties IPBLOCK IP" + NLTAB + "Example: ovh spam listIp 91.121.228.135/32 91.121.228.135",
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 2)
+				p, err := ipr.SpamGetIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+				handleErrFromOvh(err)
+				dieOk(fmt.Sprintf("Blocked since (duration sec):%d%sLast time: %s%sIP: %s%sState: %s", p.Time, NL, p.Date, NL, p.IpSpamming, NL, p.State))
 			},
 		},
 	}
