@@ -1,4 +1,4 @@
-# OVH CLI V2
+# OVH CLI
 
 ovh-cli brings OVH services to the command line.
 
@@ -120,7 +120,7 @@ Example :
 	* [Cancel server task](#cancel-server-task)
 * [SMS](#sms)
 	* [List SMS services ](#list-sms-services)
-	* [Send a SMS](#send-a-new-sms-job)
+	* [Send a SMS](#send-a-sms)
   	
   	
 ## IP
