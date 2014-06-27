@@ -158,7 +158,7 @@ OPTIONS:
 	app.Commands = []cli.Command{
 		{
 			Name:        "ip",
-			Usage:       "IP section",
+			Usage:       "IP subsection",
 			Description: "Commands about IP",
 			Subcommands: getIpCmds(client),
 		}, {
@@ -167,9 +167,19 @@ OPTIONS:
 			Description: "Commands OVH firewall",
 			Subcommands: getFwCmds(client),
 		}, {
+			Name:        "server",
+			Usage:       "Server subsection",
+			Description: "Commands about OVH server",
+			Subcommands: getServerCmds(client),
+		}, {
+			Name:        "sms",
+			Usage:       "Sms subsection",
+			Description: "Commands about OVH SMS",
+			Subcommands: getSmsCmds(client),
+		}, {
 			Name:        "spam",
 			Usage:       "Spam subsection",
-			Description: "Cmmands about OVH antispam protection",
+			Description: "Commands about OVH antispam protection",
 			Subcommands: getSpamCmds(client),
 		},
 	}

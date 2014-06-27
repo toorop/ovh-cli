@@ -393,17 +393,17 @@ Response : List of blocked IP, one per line or error
 
 Example :
 
-	./ovh spams getBlocked
+	./ovh spam getBlocked
 	178.33.223.41
 	178.33.223.42
 	178.33.223.43	
 	
-## WARNING : commands below are not (re)implemented yet		
+
 	
 ## SMS
 #### List SMS services
 
-	./ovh sms listServices	
+	ovh sms listServices	
 
 Response : list of SMS services, one per line, or Error
 
@@ -414,19 +414,17 @@ Example :
 	
 #### Create a new SMS job (eg send a sms)
 
-	./ovh sms SMS_SERVICE new 'JSON_ENCODED_SMS_JOB'
+	ovh sms send SMS_SERVICE [--flags]
 	
 With :
 
-* SMS_SERVICE : A sms service returned by "./ovh sms listServices"
-* JSON_ENCODED_SMS_JOB : a JSON encoded SMS Job, see below.
+* SMS_SERVICE : A sms service returned by "ovh sms listServices"
 
-##### JSON encoded SMS job format
-It's an JSON object, with thoses properties (* = requiered)
+Flags (*: reu):
 
-* message* : message to send (string)
-* receivers* : array of receivers (array of string)
-* sender* : sender (string) 
+* --message: message to send (string - required)
+* --receivers : space delimited list of receivers (array of string - required)
+* -- sender : sender (string - requiered) 
 * noStopClause : bool
 * priority : hight|low|medium|veryLow (string)
 * validityPeriod : The maximum time -in minute(s)- before the message is dropped. default 2880 (int)
@@ -451,14 +449,15 @@ Example :
 	Credits removed: 1
 	
 ## SERVER
-#### List your dedicated servers
+#### Get list of your dedicated servers
+
 	./ovh server list
 	
 Response: all your server names. One per line.
 
 Example :
 
-	./ovh server list
+	ovh server list
 	ns309865.ovh.net
 	ns205931.ovh.net
 	ks323462.kimsufi.com
@@ -466,7 +465,8 @@ Example :
 	ns26462.ovh.net
 
 ### Get server properties
-	./ovh server properties SERVER_NAME 
+
+	ovh server getProperties SERVER_NAME 
 
 With :
 
@@ -476,35 +476,36 @@ Response : String with one property by line
 
 Example :
 
-	./ovh server properties ns309865.ovh.net
-	ID: 100800
-	Name: ns309865.ovh.net
-	Ip: 188.165.197.13
-	Datacenter: rbx3
-	ProfessionalUse: true
-	CommercialRange: sp
-	Os: proxmox_64
+	ovh server getProperties ks323462.kimsufi.com
+	ID: 323462
+	Name: ks323462.kimsufi.com
+	Ip: 37.187.0.144
+	Datacenter: gra1
+	SupportLevel: pro
+	ProfessionalUse: false
+	CommercialRange: sk
+	Os: ubuntu1304-server_64
 	State: ok
-	Reverse: 8.vz.protecmail.com.
+	Reverse: ks323462.kimsufi.com.
 	Monitored: true
-	Rack: 41G07
+	Rack: G102A03
 	RootDevice:
 	LinkSpeed: 100
 	Bootid: 1
 
 
 ### Reboot server
-	./ovh server reboot SERVER_NAME 
+	ovh server reboot SERVER_NAME 
 	
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
 
-Response : A server task as string (see example)
+Response : A server task (see example)
 
 Example :
 
-	./ovh server reboot ks323462.kimsufi.com
+	$ ovh server reboot ks323462.kimsufi.com
 	Task ID: 2296596
 	Function: hardReboot
 	Status: init
@@ -515,27 +516,29 @@ Example :
 
 
 ### Get server tasks
-	./ovh server getTasks SERVER_NAME FUNCTION STATUS
+
+	ovh server getTasks SERVER_NAME --function  --status
 	
 With :
 
-* SERVER_NAME : name of the server (from ./ovh server list)
-* FUNCTION (optional) : filter by function. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables functions.
-* STATUS (optional) : filter by status. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables status.
+* SERVER_NAME : name of the server (from "ovh server list")
 
-For STATUS and FUNCTION you can use "all" as wildcard if you want to filter by STATUS (./ovh server getTasks SERVER_NAME all done)
+Flags :
+
+* --function (optional) : filter by function. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables functions.)
+* --status (optional) : filter by status. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables status.
 
 Response : A list of task ID (1 per line)	
 
 Example :
 	
-	./ovh server getTasks ns309865.ovh.net hardReboot done
+	ovh server getTasks ns309865.ovh.net --function hardReboot --status done
 	2296596
 	2296597
 
 
 ### Get server task properties
-	./ovh server getTaskProperties SERVER_NAME TASK_ID
+	ovh server getTaskProperties SERVER_NAME TASK_ID
 	
 With :
 
@@ -546,36 +549,36 @@ Response : 	A server task as string (see example)
 
 Example :
 
-	./ovh server getTaskProperties ks323462.kimsufi.com 2296596
-	Task ID: 2296596
+	ovh server getTaskProperties ks323462.kimsufi.com 4319579
+	Task ID: 4319579
 	Function: hardReboot
 	Status: done
 	Comment: Reboot asked
-	Last Upadte: 2014-04-01T08:45:00+02:00
-	Start Date: 2014-04-01T08:43:23+02:00
-	Done Date: 2014-04-01T08:45:00+02:00
+	Last Upadte: 2014-06-02 07:53:10 +0000 UTC
+	Start Date: 2014-06-02 07:51:20 +0000 UTC
+	Done Date: 2014-06-02 07:53:10 +0000 UTC
 
 	
 ### Cancel server task
-	./ovh server cancelTask SERVER_NAME TASK_ID
+
+	ovh server cancelTask SERVER_NAME TASK_ID
 	
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
 * TASK_ID : id of the task as returned by getTasks
 
-Response : "Success task TASK_ID cancelled" on success, error... on error
+Response : "Done!" on success, error... on error
 
 Examples :
 	
 	./ovh server cancelTask ks323462.kimsufi.com 2297463
-	Success task 2297463 cancelled
+	Done!
 
 	./ovh server cancelTask ks323462.kimsufi.com 2297463
-	Error : [401 You cannot stop this task]	
-	
-	./ovh server cancelTask ks323462.kimsufi.com 2297463
-	Error : [403 This task is already done]
+	Error!
+	This task is already done	
+
 
 		
 		
