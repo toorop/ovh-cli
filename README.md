@@ -6,37 +6,6 @@ ovh-cli brings OVH services to the command line.
 <img src="http://dl.toorop.fr/pics/ovh-cli-help.png" alt="ovh-cli screenshot">
 </center>
 
-## Roadmap
-
-* /cdn/dedicated todo
-* /cdn/website todo
-* /cdn/webstorage todo
-* /cloud todo
-* /dedicated/installationTemplate todo
-* /dedicated/nas todo
-* /dedicated/nasha todo
-* /dedicated/server partially done
-* /dedicatedCloud todo
-* /domain todo
-* /email/exchange todo
-* /email/exchange todo
-* /hosting/web todo
-* /ip partially done
-* /license/cpanel todo
-* /license/directadmin todo
-* /license/plesk todo
-* /license/virtuozzo todo
-* /license/windows todo
-* /license/worklight todo
-* /me todo
-* /newAccount todo
-* /order todo
-* /price todo
-* /sms partially done
-* /telephony todo
-* /vps todo
-* /vrack todo
-* /xdsl todo 
 
 ## How to use
 
@@ -640,7 +609,37 @@ Example :
 	Done!	
 		
 	 	
-	
+## Roadmap
+
+* /cdn/dedicated todo
+* /cdn/website todo
+* /cdn/webstorage todo
+* /cloud todo
+* /dedicated/installationTemplate todo
+* /dedicated/nas todo
+* /dedicated/nasha todo
+* /dedicated/server partially done
+* /dedicatedCloud todo
+* /domain todo
+* /email/exchange todo
+* /email/exchange todo
+* /hosting/web todo
+* /ip partially done
+* /license/cpanel todo
+* /license/directadmin todo
+* /license/plesk todo
+* /license/virtuozzo todo
+* /license/windows todo
+* /license/worklight todo
+* /me todo
+* /newAccount todo
+* /order todo
+* /price todo
+* /sms partially done
+* /telephony todo
+* /vps todo
+* /vrack todo
+* /xdsl todo 	
 	
 
 	
