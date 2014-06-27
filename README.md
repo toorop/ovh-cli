@@ -24,7 +24,7 @@ On windows with :
 	
 
 ## Avalaible commands
-We will consider Linux|MacOs version, just replace *ovh* by *ovh.exe* if you are using Windows.
+We will consider Linux (or MacOS) version, just replace *ovh* by *ovh.exe* if you are using Windows.
 
 * WORDS in uppercase are variables
 * words in lower cases are parts of the command to be executed.
@@ -55,7 +55,7 @@ Example :
 	OPTIONS:
    		--help, -h	show help
    
-* IP
+* [IP](#ip)
 	* List IP blocks
 * Firewall
 	* List IP under firewall
@@ -398,55 +398,6 @@ Example :
 	178.33.223.42
 	178.33.223.43	
 	
-
-	
-## SMS
-#### List SMS services
-
-	ovh sms listServices	
-
-Response : list of SMS services, one per line, or Error
-
-Example :
-	
-	./ovh sms listServices	
-	sms-st2-1
-	
-#### Create a new SMS job (eg send a sms)
-
-	ovh sms send SMS_SERVICE [--flags]
-	
-With :
-
-* SMS_SERVICE : A sms service returned by "ovh sms listServices"
-
-Flags (*: reu):
-
-* --message: message to send (string - required)
-* --receivers : space delimited list of receivers (array of string - required)
-* -- sender : sender (string - requiered) 
-* noStopClause : bool
-* priority : hight|low|medium|veryLow (string)
-* validityPeriod : The maximum time -in minute(s)- before the message is dropped. default 2880 (int)
-* senderForResponse : (bool)
-* charset : default UTF-8 (string)
-* coding : defaut 7bit (string)
-* differedPeriod : The time -in minute(s)- to wait before sending the message (int)
-* receiversSlotId :The receivers document url link in csv format (string)
-* class : flash|sim|phoneDisplay|toolkit (string)
-* serviceName : The internal name of your SMS offer (string) 
-
-Response :
-* on success : string ""Done" + jobs ID + credits removed
-* on failure : error
-
-
-Example :
-
-	./ovh sms new sms-su22-1 '{"message": "Test sms message","receivers": ["+336222XXXX"],"sender": "+33979XXXXX"}'
-	Done
-	Job ID: 17185893
-	Credits removed: 1
 	
 ## SERVER
 #### Get list of your dedicated servers
@@ -580,7 +531,55 @@ Examples :
 	This task is already done	
 
 
-		
+## SMS
+#### List SMS services
+
+	ovh sms listServices	
+
+Response : list of SMS services, one per line, or Error
+
+Example :
+	
+	./ovh sms listServices	
+	sms-st2-1
+	
+#### Send a new SMS job
+
+	ovh sms send SMS_SERVICE [--flags]
+	
+With :
+
+* SMS_SERVICE : A sms service returned by "ovh sms listServices"
+
+Flags:
+
+* --message: message to send (string - required)
+* --receiver : Receiver phone number. If you have multiple receivers add on --receiver flag by reciever (string - required)
+* -- sender : sender (string - requiered) 
+* noStopClause : bool
+* priority : hight|low|medium|veryLow (string)
+* validityPeriod : The maximum time -in minute(s)- before the message is dropped. default 2880 (int)
+* senderForResponse : (bool)
+* charset : default UTF-8 (string)
+* coding : defaut 7bit (string)
+* differedPeriod : The time -in minute(s)- to wait before sending the message (int)
+* receiversSlotId :The receivers document url link in csv format (string)
+* class : flash|sim|phoneDisplay|toolkit (string)
+
+Response :
+* on success : string ""Done" + jobs details
+* on failure : error
+
+
+Example :
+
+	ovh sms send sms-sd2545-1 --sender +339XXXXX --receiver +336XXXXX --message "Test from ovh-cli"
+
+	Job ID: 23027686
+	Invalid receivers:
+	Valid receivers: +33622203197
+	Credits removed: 1
+	Done!	
 		
 	 	
 	
