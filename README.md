@@ -1,12 +1,50 @@
 # OVH CLI V2
 
+ovh-cli brings OVH services to the command line.
+
+<center>
+<img src="http://dl.toorop.fr/pics/ovh-cli-help.png" alt="ovh-cli screenshot">
+</center>
+
+## Roadmap
+
+* /cdn/dedicated todo
+* /cdn/website todo
+* /cdn/webstorage todo
+* /cloud todo
+* /dedicated/installationTemplate todo
+* /dedicated/nas todo
+* /dedicated/nasha todo
+* /dedicated/server partially done
+* /dedicatedCloud todo
+* /domain todo
+* /email/exchange todo
+* /email/exchange todo
+* /hosting/web todo
+* /ip partially done
+* /license/cpanel todo
+* /license/directadmin todo
+* /license/plesk todo
+* /license/virtuozzo todo
+* /license/windows todo
+* /license/worklight todo
+* /me todo
+* /newAccount todo
+* /order todo
+* /price todo
+* /sms partially done
+* /telephony todo
+* /vps todo
+* /vrack todo
+* /xdsl todo 
+
 ## How to use
 
 #### 1 - Download executable
 
-* Windows : Soon
-* MacOs : Soon
-* Linux : Soon
+* [Windows](http://dl.toorop.fr/softs/ovh_cli/windows/ovh.exe)
+* [MacOS](http://dl.toorop.fr/softs/ovh_cli/macos/ovh)
+* [Linux](http://dl.toorop.fr/softs/ovh_cli/linux/ovh)
 
 
 #### 2 - Get a consumer key
@@ -56,15 +94,35 @@ Example :
    		--help, -h	show help
    
 * [IP](#ip)
-	* List IP blocks
-* Firewall
-	* List IP under firewall
-	* Add an IP on the firewall
-	* Remove an IP from firewall 
-	* Get properties of an IP
-	* Update properties of an IP
-	* Add a rule on an IP	
-  
+	* [List IP blocks](#list-ip-blocks)
+	* [Firewall](#firewall)
+		* [List IP under firewall](#list-ips-of-an-ip-block-which-are-under-firewall)
+		* [Add an IP on the firewall](#add-an-ip-on-firewall)
+		* [Remove an IP from firewall](#remove-an-ip-from-firewall) 
+		* [Get properties of an IP](#get-properties-of-a-firewalled-ip)
+		* [Update properties of an IP](#update-ip-properties)
+		* [List firewall rules](#list-firewall-rules)
+		* [Add a rule on an IP](#add-a-firewall-rule)
+		* [Remove a firewall rule](#remove-a-firewall-rule)
+		* [Get info about a firewall rule](#get-info-about-a-firewall-rule) 
+	* [Spam](#spam)
+		* [List spamming IP of an IP block](#list-spamming-ip-of-an-ip-block)
+  		* [Get info about a spamming IP](#get-more-info-about-a-spamming-ip)
+  		* [Unblock a blocked IP](#unblock-a-blocked-ip)
+  		* [Get statistics about a spamming IP for a time period](#get-statistics-about-a-spamming-ip-for-a-time-period)
+  		* [Get IP which are currently blocked for spam](#get-ip-which-are-currently-blocked-for-spam-helper)
+* [Server](#server) 
+	* [Get list of your dedicated servers](2#get-list-of-your-dedicated-servers)
+	* [Get server properties](#get-server-properties)
+	* [Reboot server](#reboot-server) 	
+	* [Get server tasks](#get-server-tasks)
+	* [Get server task properties](#get-server-task-properties)
+	* [Cancel server task](#cancel-server-task)
+* [SMS](#sms)
+	* [List SMS services ](#list-sms-services)
+	* [Send a SMS](#send-a-new-sms-job)
+  	
+  	
 ## IP
 #### List IP blocks
 	./ovh ip list [--flag...]
@@ -400,7 +458,7 @@ Example :
 	
 	
 ## SERVER
-#### Get list of your dedicated servers
+### Get list of your dedicated servers
 
 	./ovh server list
 	
@@ -543,7 +601,7 @@ Example :
 	./ovh sms listServices	
 	sms-st2-1
 	
-#### Send a new SMS job
+#### Send a SMS
 
 	ovh sms send SMS_SERVICE [--flags]
 	
