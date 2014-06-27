@@ -103,7 +103,7 @@ func init() {
 func main() {
 	app := cli.NewApp()
 	app.Name = "ovh"
-	app.Usage = "ovh is a command line interface which interact with OVH API."
+	app.Usage = "ovh-cli brings OVH services to the command line.."
 	app.Version = VERSION
 	app.Author = "Stéphane Depierrepont aka Toorop"
 	app.Email = "toorop@toorop.fr"
