@@ -24,8 +24,12 @@ func dieInvalidConsumerKey() {
 }
 
 // Exit & and display error on bad arguments
-func dieBadArgs() {
-	dieError("Bad arg(s). Run ./ovh command [subCommand...] --help for help.")
+func dieBadArgs(msg ...string) {
+	errMsg := "Bad arg(s). Run ./ovh command [subCommand...] --help for help."
+	if len(msg) > 0 {
+		errMsg = msg[0]
+	}
+	dieError(errMsg)
 }
 
 // Exit if args are missing
