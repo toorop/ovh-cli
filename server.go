@@ -60,8 +60,8 @@ func getServerCmds(client *govh.OvhClient) (serverCmds []cli.Command) {
 			Usage:       "Return a list of tasks for a server ",
 			Description: "ovh server getTasks SERVER [--function, --status]" + NLTAB + "Example: ovh server getTasks ns309865.ovh.net --function hardReboot --status done",
 			Flags: []cli.Flag{
-				cli.StringFlag{"function", "", "(optional) - filter by function. See https://api.ovh.com/console/#/dedicated/server/%7BserviceName%%7D/task#GET for availables functions.)"},
-				cli.StringFlag{"status", "", "(optional) : filter by status. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%%7D/task#GET) for availables status."},
+				cli.StringFlag{"function", "", "(optional) - filter by function. See https://api.ovh.com/console/#/dedicated/server/%7BserviceName%%7D/task#GET for availables functions.)", ""},
+				cli.StringFlag{"status", "", "(optional) : filter by status. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%%7D/task#GET) for availables status.", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)

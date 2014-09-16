@@ -23,10 +23,10 @@ func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
 			Usage:       "List your IP blocks.",
 			Description: "ovh ip list [flag...]" + NLTAB + "Example: ovh ip list --type vps",
 			Flags: []cli.Flag{
-				cli.StringFlag{"desc", "", "Filter: by description (like)."},
-				cli.StringFlag{"ip", "", "Filter: by IP (contains or equals)."},
-				cli.StringFlag{"routedTo", "", "Filter: by routing."},
-				cli.StringFlag{"type", "all", "Filter: by IP block type: all|cdn|dedicated|failover|hosted_ssl|housing|loadBalancing|mail|pcc|pci|private|vps|vpn|vrack|xdsl"},
+				cli.StringFlag{"desc", "", "Filter: by description (like).", ""},
+				cli.StringFlag{"ip", "", "Filter: by IP (contains or equals).", ""},
+				cli.StringFlag{"routedTo", "", "Filter: by routing.", ""},
+				cli.StringFlag{"type", "all", "Filter: by IP block type: all|cdn|dedicated|failover|hosted_ssl|housing|loadBalancing|mail|pcc|pci|private|vps|vpn|vrack|xdsl", ""},
 			},
 			Action: func(c *cli.Context) {
 				fDesc := strings.ToLower(c.String("desc"))
@@ -64,7 +64,7 @@ func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
 			Usage:       "Update properties of an IP",
 			Description: `ovh ip updateProperties IPBLOCK --desc "description"` + NLTAB + `Example: ovh ip updateProperties 37.187.0.144/32 --desc "IP routed to lunar base server"`,
 			Flags: []cli.Flag{
-				cli.StringFlag{"desc", "", "Update description"},
+				cli.StringFlag{"desc", "", "Update description", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)

@@ -72,7 +72,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Usage:       "Update an IP on the firewall.",
 			Description: "ovh fw update IPBLOCK IP [--flag...]" + NLTAB + "Example: ovh fw update 92.222.14.249/32 92.222.14.249 --enable true",
 			Flags: []cli.Flag{
-				cli.StringFlag{"enabled", "", "Set enabled state of the IP (true|false)."},
+				cli.StringFlag{"enabled", "", "Set enabled state of the IP (true|false).", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
@@ -87,7 +87,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Usage:       "Return a list ao rule sequences.",
 			Description: "ovh fw listRule IPBLOCK IP [--state]" + NLTAB + "Example: ovh fw listRule 92.222.14.249/32 92.222.14.249 --state ok",
 			Flags: []cli.Flag{
-				cli.StringFlag{"state", "", "Filter on state (creationPending|ok|removalPending)."},
+				cli.StringFlag{"state", "", "Filter on state (creationPending|ok|removalPending).", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
@@ -110,14 +110,14 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Usage:       "Add a new rule on an IP.",
 			Description: "ovh fw addRule [--flag...] IPBLOCK IP  " + NLTAB + "Example: ovh fw addRule --action deny --protocol tcp --toPort 22 --sequence 0 92.222.14.249/32 92.222.14.249",
 			Flags: []cli.Flag{
-				cli.StringFlag{"action", "", "Action on this rule (deny|permit). Required."},
-				cli.StringFlag{"sequence", "", "Sequence number of your rule. Required."},
-				cli.StringFlag{"protocol", "", "Network protocol (ah|esp|gre|icmp|ipv4|tcp|udp). Requiered."},
-				cli.StringFlag{"fromPort", "", "Source port for your rule. Only with TCP/UDP protocol"},
-				cli.StringFlag{"fromIp", "", "Source ip for your rule. Any if not set."},
-				cli.StringFlag{"toPort", "", "Destination port for your rule. Only with TCP/UDP protocol."},
-				cli.StringFlag{"tcpFragments", "", "Can only be used with TCP protocol (true|false)"},
-				cli.StringFlag{"tcpOption", "", "Can only be used with TCP protocol (established|syn)"},
+				cli.StringFlag{"action", "", "Action on this rule (deny|permit). Required.", ""},
+				cli.StringFlag{"sequence", "", "Sequence number of your rule. Required.", ""},
+				cli.StringFlag{"protocol", "", "Network protocol (ah|esp|gre|icmp|ipv4|tcp|udp). Requiered.", ""},
+				cli.StringFlag{"fromPort", "", "Source port for your rule. Only with TCP/UDP protocol", ""},
+				cli.StringFlag{"fromIp", "", "Source ip for your rule. Any if not set.", ""},
+				cli.StringFlag{"toPort", "", "Destination port for your rule. Only with TCP/UDP protocol.", ""},
+				cli.StringFlag{"tcpFragments", "", "Can only be used with TCP protocol (true|false)", ""},
+				cli.StringFlag{"tcpOption", "", "Can only be used with TCP protocol (established|syn)", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)

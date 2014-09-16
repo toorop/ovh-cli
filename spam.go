@@ -21,7 +21,7 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 			Usage:       "List IP which send (or have sent) spam.",
 			Description: "ovh spam listIp IPBLOCK [--state ]" + NLTAB + "Example: ovh spam listIp 91.121.228.135/32 --state unblocked",
 			Flags: []cli.Flag{
-				cli.StringFlag{"state", "", "The state of the IP (blockedForSpam|unblocked|unblocking)."},
+				cli.StringFlag{"state", "", "The state of the IP (blockedForSpam|unblocked|unblocking).", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
@@ -54,8 +54,8 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 			Usage:       "Get spam stats about a spamming IP.",
 			Description: "ovh spam getStats IPBLOCK IP --from TIMESTAMP_START --to TIMESTAMP_STOP" + NLTAB + "Example: ovh spam getStats 178.33.223.32/28 178.33.223.42 --from 1385251200 --to 1387882630",
 			Flags: []cli.Flag{
-				cli.StringFlag{"from", "", "Unix timestamp representing the begining of the peiod (required)."},
-				cli.StringFlag{"to", "", "Unix timestamp representing the end of the peiod (required)."},
+				cli.StringFlag{"from", "", "Unix timestamp representing the begining of the peiod (required).", ""},
+				cli.StringFlag{"to", "", "Unix timestamp representing the end of the peiod (required).", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)

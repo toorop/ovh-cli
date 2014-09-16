@@ -33,9 +33,9 @@ func getSmsCmds(client *govh.OvhClient) (smsCmds []cli.Command) {
 			Usage:       "Send an new SMS",
 			Description: `ovh sms send SERVICE [--flags...]" + NLTAB + "Example: ovh sms send sms-st2-1 --sender +33979XXXX --receivers +336222XXXX +336221XXXX --message "Test from ovh-cli"`,
 			Flags: []cli.Flag{
-				cli.StringFlag{"sender", "", "The sender phone number in international format (+33XXXXXX for France for ex). Required."},
-				cli.StringSliceFlag{"receiver", &cli.StringSlice{}, "Receiver phone number. If you have multiple receivers add on --receiver flag by reciever. Requiered."},
-				cli.StringFlag{"message", "", "The message you want to send. Required"},
+				cli.StringFlag{"sender", "", "The sender phone number in international format (+33XXXXXX for France for ex). Required.", ""},
+				cli.StringSliceFlag{"receiver", &cli.StringSlice{}, "Receiver phone number. If you have multiple receivers add on --receiver flag by reciever. Requiered.", ""},
+				cli.StringFlag{"message", "", "The message you want to send. Required", ""},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
