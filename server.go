@@ -15,7 +15,6 @@ func getServerCmds(client *govh.OvhClient) (serverCmds []cli.Command) {
 		return
 	}
 
-<<<<<<< HEAD
 	serverCmds = []cli.Command{
 		{
 			Name:        "list",
@@ -130,7 +129,8 @@ func getServerCmds(client *govh.OvhClient) (serverCmds []cli.Command) {
 				dieOk()
 			},
 		},
-=======
+	}
+
 	switch cmd.Action {
 	// List
 	case "list":
@@ -296,7 +296,6 @@ func getServerCmds(client *govh.OvhClient) (serverCmds []cli.Command) {
 
 	default:
 		return errors.New(fmt.Sprintf("This action : '%s' is not valid or not implemented yet !", strings.Join(cmd.Args, " ")))
->>>>>>> master
 	}
 	return
 }
