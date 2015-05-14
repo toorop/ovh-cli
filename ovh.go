@@ -4,7 +4,7 @@ import (
 	//"flag"
 	"bufio"
 	"fmt"
-	"github.com/Toorop/govh"
+	"github.com/toorop/govh"
 	//"github.com/Toorop/govh/ip"
 	"github.com/codegangsta/cli"
 	"github.com/toqueteos/webbrowser"
@@ -181,6 +181,11 @@ OPTIONS:
 			Usage:       "Spam subsection",
 			Description: "Commands about OVH antispam protection",
 			Subcommands: getSpamCmds(client),
+		}, {
+			Name:        "cloud",
+			Usage:       "Cloud subsection",
+			Description: "Commands about OVH cloud",
+			Subcommands: getCloudCmds(client),
 		},
 	}
 

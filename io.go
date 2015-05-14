@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime/debug"
+	//"runtime/debug"
 )
 
 func dieError(v ...interface{}) {
@@ -13,7 +13,7 @@ func dieError(v ...interface{}) {
 		fmt.Printf("%v", vv)
 	}
 	fmt.Println("")
-	debug.PrintStack()
+	//debug.PrintStack()
 	os.Exit(1)
 }
 

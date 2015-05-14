@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Toorop/govh"
+	"github.com/toorop/govh"
 )
 
 // handleErrFromOvh handle error from OVH API

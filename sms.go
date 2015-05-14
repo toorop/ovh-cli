@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/Toorop/govh"
-	"github.com/Toorop/govh/sms"
 	"github.com/codegangsta/cli"
+	"github.com/toorop/govh"
+	"github.com/toorop/govh/sms"
 	"strings"
 )
 

@@ -92,7 +92,10 @@ Example :
 * [SMS](#sms)
 	* [List SMS services ](#list-sms-services)
 	* [Send a SMS](#send-a-sms)
-  	
+* [Cloud](#cloud)
+	* [List cloud passports](#list-cloud-passports)
+	* [List projects ID](#List-projects-id)	
+  	* [Get project info](#get-project-info)
   	
 ## IP
 #### List IP blocks
@@ -610,9 +613,52 @@ Example :
 	Credits removed: 1
 	Done!	
 		
+
+## Cloud
+#### List cloud passports
+
+	ovh cloud getPassports	
+
+Response : list of cloud passports, one per line, or Error
+
+Example :
+	
+	ovh cloud getPassports	
+	publiccloud-passport-xxxxx
+
+#### List projects ID
+
+	ovh cloud getProjectsId
+
+Response : list of cloud projects id, one per line, or Error
+
+Example :
+	
+	ovh cloud getProjectsId
+	a402414c9977XXXXXXXXXXXXXXXXXXXX
+	a402414c997XXXXXXXXXXXXXXXXXXXXX
+	
+### Get project info
+	
+	ovh cloud getProject PROJECT_ID
+
+Response: info about this project
+
+Example:
+
+	ovh cloud getProject a402414c997746e396456d0068a3XXX
+	Project Id: a402414c997746e396456d0068a3XXXX
+	Status: ok
+	Creation date: 2015-05-06T20:20:26+02:00
+	Description: 
+
+
+
+
 	 	
 ## Roadmap
 
+* /cloud
 * /cdn/dedicated todo
 * /cdn/website todo
 * /cdn/webstorage todo
