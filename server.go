@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
 	"github.com/toorop/govh/server"
-	"strconv"
 )
 
 // getFwCmds return commands for firewall subsection
-func getServerCmds(client *govh.OvhClient) (serverCmds []cli.Command) {
+func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 	sr, err := server.New(client)
 	if err != nil {
 		return

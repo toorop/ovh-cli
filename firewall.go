@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
 	"github.com/toorop/govh/ip"
-	"strconv"
-	"strings"
 )
 
 // getFwCmds return commands for firewall subsection
-func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
+func getFwCmds(client *govh.OVHClient) (fwCmds []cli.Command) {
 	ipr, err := ip.New(client)
 	if err != nil {
 		return
@@ -26,7 +27,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				if len(c.Args()) == 0 {
 					dieBadArgs()
 				}
-				ips, err := ipr.FwListIpOfBlock(ip.IpBlock{c.Args().First(), ""})
+				ips, err := ipr.FwListIPOfBlock(ip.IPBlock{c.Args().First(), ""})
 				handleErrFromOvh(err)
 				for _, ip := range ips {
 					fmt.Println(ip)
@@ -40,7 +41,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Description: "ovh fw add IPBLOCK IP" + NLTAB + "Example: ovh fw add 92.222.14.249/32 92.222.14.249",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				err := ipr.FwAddIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+				err := ipr.FwAddIP(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1))
 				handleErrFromOvh(err)
 				dieDone()
 			},
@@ -51,7 +52,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Description: "ovh fw remove IPBLOCK IP" + NLTAB + "Example: ovh fw remove 92.222.14.249/32 92.222.14.249",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				err := ipr.FwRemoveIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+				err := ipr.FwRemoveIP(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1))
 				handleErrFromOvh(err)
 				dieDone()
 			},
@@ -62,7 +63,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Description: "ovh fw getProperties IPBLOCK IP " + NLTAB + "Example: ovh fw getProperties 92.222.14.249/32 92.222.14.249",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				p, err := ipr.FwGetIpProperties(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+				p, err := ipr.FwGetIPProperties(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1))
 				handleErrFromOvh(err)
 				dieOk(fmt.Sprintf("Ip: %s%sEnabled: %t%sState: %s", p.Ip, NL, p.Enabled, NL, p.State))
 			},
@@ -77,7 +78,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
 				fEnabled := c.Bool("enabled")
-				err := ipr.FwUpdateIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), fEnabled)
+				err := ipr.FwUpdateIP(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1), fEnabled)
 				handleErrFromOvh(err)
 				dieDone()
 			},
@@ -94,9 +95,9 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				var sequences []int
 				if c.IsSet("state") {
 					fState := c.String("state")
-					sequences, err = ipr.FwListRules(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), fState)
+					sequences, err = ipr.FwListRules(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1), fState)
 				} else {
-					sequences, err = ipr.FwListRules(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+					sequences, err = ipr.FwListRules(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1))
 				}
 				handleErrFromOvh(err)
 				for _, seq := range sequences {
@@ -166,29 +167,29 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				}
 
 				// fwTcpOption
-				fwTcpOption := ip.FwTcpOption{}
-				flagFwTcpOption := false
+				fwTCPOption := ip.FwTcpOption{}
+				flagFwTCPOption := false
 
 				// tcpOptionFragment
 				if c.IsSet("tcpFragments") {
-					fwTcpOption.Fragments = c.Bool("tcpFragments")
-					flagFwTcpOption = true
+					fwTCPOption.Fragments = c.Bool("tcpFragments")
+					flagFwTCPOption = true
 				}
 
 				// tcpOption
 				if c.IsSet("tcpOption") {
-					tcpOption := c.String("tcpOption")
-					if !inSliceStr(tcpOption, []string{"established", "syn"}) {
+					TCPOption := c.String("tcpOption")
+					if !inSliceStr(TCPOption, []string{"established", "syn"}) {
 						dieBadArgs()
 					}
-					fwTcpOption.Option = tcpOption
-					flagFwTcpOption = true
+					fwTCPOption.Option = TCPOption
+					flagFwTCPOption = true
 
 				}
-				if flagFwTcpOption {
-					rule.TcpOption = &fwTcpOption
+				if flagFwTCPOption {
+					rule.TcpOption = &fwTCPOption
 				}
-				handleErrFromOvh(ipr.FwAddRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), rule))
+				handleErrFromOvh(ipr.FwAddRule(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1), rule))
 				dieDone()
 			},
 		},
@@ -202,7 +203,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				if err != nil {
 					dieError(err)
 				}
-				handleErrFromOvh(ipr.FwRemoveRule(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), int(sequence)))
+				handleErrFromOvh(ipr.FwRemoveRule(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1), int(sequence)))
 				dieDone()
 			},
 		},
@@ -216,7 +217,7 @@ func getFwCmds(client *govh.OvhClient) (fwCmds []cli.Command) {
 				if err != nil {
 					dieError(err)
 				}
-				p, err := ipr.FwGetRuleProperties(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), int(sequence))
+				p, err := ipr.FwGetRuleProperties(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1), int(sequence))
 				handleErrFromOvh(err)
 				dieOk(fmt.Sprintf("Sequence: %d%sCreated: %s%sProtocol: %s%sFromIp: %s%sFromPort: %s%sToIP: %s%sToPort: %s%sAction: %s%sRule:%s%sState: %s%sTcpOption: %s%sFragments: %t", p.Sequence, NL, p.CreationDate, NL, p.Protocol, NL, p.FromIp, NL, p.FromPort, NL, p.ToIp, NL, p.ToPort, NL, p.Action, NL, p.Rule, NL, p.State, NL, p.TcpOption, NL, p.Fragments))
 			},

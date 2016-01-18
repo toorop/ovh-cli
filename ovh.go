@@ -4,13 +4,15 @@ import (
 	//"flag"
 	"bufio"
 	"fmt"
+
 	"github.com/toorop/govh"
 	//"github.com/Toorop/govh/ip"
+	"os"
+	"runtime"
+
 	"github.com/codegangsta/cli"
 	"github.com/toqueteos/webbrowser"
 	"github.com/wsxiaoys/terminal"
-	"os"
-	"runtime"
 	//"strings"
 )
 
@@ -22,15 +24,11 @@ const (
 )
 
 var (
-	// ck represents the cocumer key
+	// ck represents the consumer key
 	ck string
 	// region represents API region.
 	// EU (default) or CA
 	region string
-	// err
-	//err error
-	// IP Ressource
-	//ipr *ip.IpRessource
 )
 
 func init() {
@@ -147,7 +145,7 @@ OPTIONS:
 `
 
 	// New govh client
-	client := govh.NewClient(getAppKey(region), getAppSecret(region), ck, region)
+	client := govh.New(getAppKey(region), getAppSecret(region), ck, region)
 
 	// default action: help
 	app.Action = func(c *cli.Context) {

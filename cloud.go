@@ -11,7 +11,7 @@ import (
 )
 
 // getFwCmds return commands for firewall subsection
-func getCloudCmds(client *govh.OvhClient) (cloudCmds []cli.Command) {
+func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 	cloud, err := cloud.New(client)
 	if err != nil {
 		return

@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
 	"github.com/toorop/govh/ip"
-	"strings"
 )
 
 // getIpCmds return commands for Ip section
-func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
+func getIpCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
 	ipr, err := ip.New(client)
 	if err != nil {
 		return
@@ -52,7 +53,7 @@ func getIpCmds(client *govh.OvhClient) (ipCmds []cli.Command) {
 			Description: "ovh ip getProperties IPBLOCK" + NLTAB + "Example: ovh ip getProperties 91.121.228.135/32",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
-				properties, err := ipr.GetIpProperties(c.Args().First())
+				properties, err := ipr.GetIPProperties(c.Args().First())
 				handleErrFromOvh(err)
 				dieOk(fmt.Sprintf("IP: %s%sType: %s%sDescription: %s%sRouted to: %s", properties.Ip, NL, properties.Type, NL, properties.Description, NL, properties.RoutedTo.ServiceName))
 			},

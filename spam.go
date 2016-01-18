@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
 	"github.com/toorop/govh/ip"
-	"time"
 )
 
 // getFwCmds return commands for firewall subsection
-func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
+func getSpamCmds(client *govh.OVHClient) (spamCmds []cli.Command) {
 	ipr, err := ip.New(client)
 	if err != nil {
 		return
@@ -32,7 +33,7 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 						dieBadArgs()
 					}
 				}
-				ips, err := ipr.SpamGetSpammingIps(ip.IpBlock{c.Args().First(), ""}, state)
+				ips, err := ipr.SpamGetSpammingIPs(ip.IPBlock{c.Args().First(), ""}, state)
 				handleErrFromOvh(err)
 				for _, ip := range ips {
 					fmt.Println(ip)
@@ -45,7 +46,7 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 			Description: "ovh spam getProperties IPBLOCK IP" + NLTAB + "Example: ovh spam listIp 91.121.228.135/32 91.121.228.135",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				p, err := ipr.SpamGetIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1))
+				p, err := ipr.SpamGetIP(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1))
 				handleErrFromOvh(err)
 				dieOk(fmt.Sprintf("Blocked since (duration sec):%d%sLast time: %s%sIP: %s%sState: %s", p.Time, NL, p.Date, NL, p.IpSpamming, NL, p.State))
 			},
@@ -67,7 +68,7 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 				if from >= to {
 					dieBadArgs()
 				}
-				stats, err := ipr.SpamGetIpStats(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1), time.Unix(int64(from), 0), time.Unix(int64(to), 0))
+				stats, err := ipr.SpamGetIPStats(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1), time.Unix(int64(from), 0), time.Unix(int64(to), 0))
 				handleErrFromOvh(err)
 				if stats == nil {
 					dieOk("No spam stats for this period")
@@ -95,7 +96,7 @@ func getSpamCmds(client *govh.OvhClient) (spamCmds []cli.Command) {
 			Description: "ovh spam unblock IPBLOCK IP" + NLTAB + "Example: ovh spam unblock 91.121.228.135/32 91.121.228.135",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				handleErrFromOvh(ipr.SpamUnblockSpamIp(ip.IpBlock{c.Args().First(), ""}, c.Args().Get(1)))
+				handleErrFromOvh(ipr.SpamUnblockSpamIP(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1)))
 				dieDone()
 			},
 		},

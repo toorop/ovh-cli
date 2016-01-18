@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
 	"github.com/toorop/govh/sms"
-	"strings"
 )
 
 // getFwCmds return commands for firewall subsection
-func getSmsCmds(client *govh.OvhClient) (smsCmds []cli.Command) {
+func getSmsCmds(client *govh.OVHClient) (smsCmds []cli.Command) {
 	sr, err := sms.New(client)
 	if err != nil {
 		return
