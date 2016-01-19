@@ -30,6 +30,25 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 				dieOk()
 			},
 		}, {
+			Name:        "getPrices",
+			Usage:       "Return a list of cloud prices",
+			Description: "Example: ovh cloud getPrices",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "json", Usage: "if set output as JSON"},
+			},
+			Action: func(c *cli.Context) {
+				prices, err := cloud.GetPrices()
+				handleErrFromOvh(err)
+				//	fmt.Println(prices.ProjectCreation)
+				if c.Bool("json") {
+					fmt.Println(prices.JSON())
+				} else {
+					fmt.Println(prices.String())
+				}
+				dieOk()
+			},
+		}, {
+
 			Name:        "getProjectsId",
 			Usage:       "Return a list of projects ID",
 			Description: "Example: ovh cloud getProjectsId",
