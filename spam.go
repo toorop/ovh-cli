@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"time"
@@ -116,4 +117,4 @@ func getSpamCmds(client *govh.OVHClient) (spamCmds []cli.Command) {
 		},
 	}
 	return
-}
+}*/

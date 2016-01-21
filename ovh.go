@@ -103,42 +103,37 @@ func main() {
 	app.Name = "ovh"
 	app.Usage = "ovh-cli brings OVH services to the command line."
 	app.Version = VERSION
-	app.Author = "Stéphane Depierrepont aka Toorop"
+	app.Author = "Stèphane Depierrepont aka Toorop"
 	app.Email = "toorop@toorop.fr"
 	cli.AppHelpTemplate = `NAME:
    {{.Name}} - {{.Usage}}
 
-USAGE:
-   {{.Name}} [section] [subsection...] [command] [arguments]
-
 SECTIONS:
-   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
+   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Description}}
    {{end}}
 OPTIONS:
    {{range .Flags}}{{.}}
    {{end}}
 `
 
-	cli.CommandHelpTemplate = `NAME:
-   {{.Name}} - {{.Usage}}
+	cli.CommandHelpTemplate = `
+   {{.Name}} - {{.Description}}
 
 USAGE:
-   {{.Description}}
+   {{.Usage}}
 
 OPTIONS:
    {{range .Flags}}{{.}}
    {{end}}
 `
 
-	cli.SubcommandHelpTemplate = `NAME:
+	cli.SubcommandHelpTemplate = `
    {{.Name}} - {{.Usage}}
 
-USAGE:
-   {{.Name}} [subsection] command [command options] [arguments...]
-
-COMMANDS|SUBSECTION:
-   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
+SUBS:
+   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Description}}
    {{end}}
+
 OPTIONS:
    {{range .Flags}}{{.}}
    {{end}}
@@ -158,12 +153,12 @@ OPTIONS:
 			Name:        "ip",
 			Usage:       "IP subsection",
 			Description: "Commands about IP",
-			Subcommands: getIpCmds(client),
+			Subcommands: getIPCmds(client),
 		}, {
 			Name:        "fw",
 			Usage:       "Firewall subsection",
 			Description: "Commands OVH firewall",
-			Subcommands: getFwCmds(client),
+			//	Subcommands: getFwCmds(client),
 		}, {
 			Name:        "server",
 			Usage:       "Server subsection",
@@ -178,7 +173,7 @@ OPTIONS:
 			Name:        "spam",
 			Usage:       "Spam subsection",
 			Description: "Commands about OVH antispam protection",
-			Subcommands: getSpamCmds(client),
+			//Subcommands: getSpamCmds(client),
 		}, {
 			Name:        "cloud",
 			Usage:       "Cloud subsection",

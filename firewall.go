@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"strconv"
@@ -224,4 +225,4 @@ func getFwCmds(client *govh.OVHClient) (fwCmds []cli.Command) {
 		},
 	}
 	return
-}
+}*/
