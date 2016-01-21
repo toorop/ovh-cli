@@ -1,11 +1,7 @@
 package main
 
-import (
-	"github.com/toorop/govh"
-)
-
 // handleErrFromOvh handle error from OVH API
-func handleErrFromOvh(err error) {
+/*func handleErrFromOvh(err error) {
 	if err == nil {
 		return
 	}
@@ -14,7 +10,7 @@ func handleErrFromOvh(err error) {
 	} else {
 		dieError(err)
 	}
-}
+}*/
 
 // inslice return true if search is in slice, false otherwise
 func inSliceStr(search string, in []string) bool {

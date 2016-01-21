@@ -23,7 +23,7 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 			Description: "Example: ovh cloud getPassport",
 			Action: func(c *cli.Context) {
 				passports, err := cloud.GetPassports()
-				handleErrFromOvh(err)
+				dieOnError(err)
 				for _, passport := range passports {
 					fmt.Println(passport)
 				}
@@ -38,7 +38,7 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 			},
 			Action: func(c *cli.Context) {
 				prices, err := cloud.GetPrices()
-				handleErrFromOvh(err)
+				dieOnError(err)
 				//	fmt.Println(prices.ProjectCreation)
 				if c.Bool("json") {
 					fmt.Println(prices.JSON())
@@ -54,7 +54,7 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 			Description: "Example: ovh cloud getProjectsId",
 			Action: func(c *cli.Context) {
 				ids, err := cloud.GetProjectsId()
-				handleErrFromOvh(err)
+				dieOnError(err)
 				for _, id := range ids {
 					fmt.Println(id)
 				}
@@ -67,7 +67,7 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
 				project, err := cloud.GetProject(c.Args().First())
-				handleErrFromOvh(err)
+				dieOnError(err)
 				fmt.Printf("Project Id: %s%s", project.Id, NL)
 				fmt.Printf("Status: %s%s", project.Status, NL)
 				fmt.Printf("Creation date: %s%s", project.CreationDate.Format(time.RFC3339), NL)

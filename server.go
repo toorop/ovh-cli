@@ -23,7 +23,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 			Description: "ovh server list" + NLTAB + "Example: ovh server list",
 			Action: func(c *cli.Context) {
 				servers, err := sr.List()
-				handleErrFromOvh(err)
+				dieOnError(err)
 				for _, server := range servers {
 					fmt.Println(server)
 				}
@@ -37,7 +37,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
 				properties, err := sr.GetProperties(c.Args().First())
-				handleErrFromOvh(err)
+				dieOnError(err)
 				fmt.Printf("ID: %d%s", properties.Id, NL)
 				fmt.Printf("Name: %s%s", properties.Name, NL)
 				fmt.Printf("Ip: %s%s", properties.Ip, NL)
@@ -69,7 +69,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 				function := c.String("function")
 				status := c.String("status")
 				tasks, err := sr.GetTasks(c.Args().First(), function, status)
-				handleErrFromOvh(err)
+				dieOnError(err)
 				for _, task := range tasks {
 					fmt.Println(task)
 				}
@@ -87,7 +87,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 					dieError(err)
 				}
 				task, err := sr.GetTaskProperties(c.Args().First(), taskId)
-				handleErrFromOvh(err)
+				dieOnError(err)
 				fmt.Printf("Task ID: %d%s", task.Id, NL)
 				fmt.Printf("Function: %s%s", task.Function, NL)
 				fmt.Printf("Status: %s%s", task.Status, NL)
@@ -108,7 +108,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 					dieError(err)
 				}
 				err = sr.CancelTask(c.Args().Get(0), taskId)
-				handleErrFromOvh(err)
+				dieOnError(err)
 				dieOk()
 			},
 		},
@@ -119,7 +119,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
 				task, err := sr.Reboot(c.Args().First())
-				handleErrFromOvh(err)
+				dieOnError(err)
 				fmt.Printf("Task ID: %d%s", task.Id, NL)
 				fmt.Printf("Function: %s%s", task.Function, NL)
 				fmt.Printf("Status: %s%s", task.Status, NL)

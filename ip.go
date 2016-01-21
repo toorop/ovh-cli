@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 
 // getIpCmds return commands for Ip section
 func getIPCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
-	ipr, err := ip.New(client)
+	IPClient, err := ip.New(client)
 	if err != nil {
 		return
 	}
@@ -23,6 +24,7 @@ func getIPCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
 			Name:        "block",
 			Description: "commands concerning IP block",
 			Subcommands: []cli.Command{
+				// List Ip Blocks
 				{
 					Name:        "list",
 					Description: "List your IP blocks.",
@@ -32,41 +34,46 @@ func getIPCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
 						cli.StringFlag{Name: "ip", Value: "", Usage: "Filter: by IP (contains or equals)."},
 						cli.StringFlag{Name: "routedTo", Value: "", Usage: "Filter: by routing."},
 						cli.StringFlag{Name: "type", Value: "all", Usage: "Filter: by IP block type: all|cdn|dedicated|failover|hosted_ssl|housing|loadBalancing|mail|pcc|pci|private|vps|vpn|vrack|xdsl"},
+						cli.BoolFlag{Name: "json", Usage: "output as JSON"},
 					},
 					Action: func(c *cli.Context) {
 						fDesc := strings.ToLower(c.String("desc"))
-						fIp := strings.ToLower(c.String("ip"))
+						fIP := strings.ToLower(c.String("ip"))
 						fRoutedTo := strings.ToLower(c.String("routedto"))
 						fType := strings.ToLower(c.String("type"))
 						if fType == "all" {
 							fType = ""
 						}
-
-						ips, err := ipr.List(fDesc, fIp, fRoutedTo, fType)
-						handleErrFromOvh(err)
-						for _, i := range ips {
+						IPBlocks, err := IPClient.List(fDesc, fIP, fRoutedTo, fType)
+						dieOnError(err)
+						// output as json ?
+						if c.Bool("json") {
+							buf, err := json.Marshal(IPBlocks)
+							dieOnError(err)
+							dieOk(string(buf))
+						}
+						for _, i := range IPBlocks {
 							fmt.Println(i)
 						}
 						dieOk()
 					},
 				},
-			},
-		},
+				// Get properties of a block
+				/*	{
+					Name:        "properties",
+					Description: "Get properties of an IP block.",
+					Usage:       "ovh ip block properties IPBLOCK" + NLTAB + "Example: ovh ip block properties 91.121.228.135/32",
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						properties, err := ipr.GetIPProperties(c.Args().First())
+						dieOnError(err)
+						dieOk(fmt.Sprintf("IP: %s%sType: %s%sDescription: %s%sRouted to: %s", properties.Ip, NL, properties.Type, NL, properties.Description, NL, properties.RoutedTo.ServiceName))
+					},
+				},*/
+			}, // end of block subCommands
+		}, // end of ip subcommands
 
 		/*
-			// getProperties
-			{
-				Name:        "getProperties",
-				Usage:       "Get properties of an IP.",
-				Description: "ovh ip getProperties IPBLOCK" + NLTAB + "Example: ovh ip getProperties 91.121.228.135/32",
-				Action: func(c *cli.Context) {
-					dieIfArgsMiss(len(c.Args()), 1)
-					properties, err := ipr.GetIPProperties(c.Args().First())
-					handleErrFromOvh(err)
-					dieOk(fmt.Sprintf("IP: %s%sType: %s%sDescription: %s%sRouted to: %s", properties.Ip, NL, properties.Type, NL, properties.Description, NL, properties.RoutedTo.ServiceName))
-				},
-			},
-
 			// Update properties
 			{
 				Name:        "updateProperties",

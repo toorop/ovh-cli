@@ -6,15 +6,21 @@ import (
 	//"runtime/debug"
 )
 
+// dieError outputs error and exit 1
 func dieError(v ...interface{}) {
-	//if runtime.GOOS == "windows" {
-	fmt.Println("ERROR!")
-	for _, vv := range v {
-		fmt.Printf("%v", vv)
+	fmt.Print("ERR")
+	if len(v) != 0 {
+		fmt.Println(v)
 	}
-	fmt.Println("")
-	//debug.PrintStack()
 	os.Exit(1)
+}
+
+// dieOnError check err and die on err
+func dieOnError(err error) {
+	if err == nil {
+		return
+	}
+	dieError(err)
 }
 
 // dieInvalidKey will exit in case of client key has expired or
@@ -39,11 +45,9 @@ func dieIfArgsMiss(nbArgs, requiered int) {
 	}
 }
 
-func dieOk(r ...string) {
-	if len(r) != 0 {
-		for _, line := range r {
-			fmt.Println(line)
-		}
+func dieOk(v ...interface{}) {
+	if len(v) != 0 {
+		fmt.Println(v)
 	}
 	os.Exit(0)
 }

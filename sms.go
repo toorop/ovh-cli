@@ -22,7 +22,7 @@ func getSmsCmds(client *govh.OVHClient) (smsCmds []cli.Command) {
 			Description: "ovh sms listServices" + NLTAB + "Example: ovh sms listServices",
 			Action: func(c *cli.Context) {
 				services, err := sr.ListServices()
-				handleErrFromOvh(err)
+				dieOnError(err)
 				for _, service := range services {
 					fmt.Println(service)
 				}
@@ -76,7 +76,7 @@ func getSmsCmds(client *govh.OVHClient) (smsCmds []cli.Command) {
 					Class:          class,
 				}
 				resp, err := sr.AddJob(c.Args().First(), job)
-				handleErrFromOvh(err)
+				dieOnError(err)
 				for _, id := range resp.Ids {
 					fmt.Println("Job ID:", id)
 				}
