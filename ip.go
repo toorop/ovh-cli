@@ -80,6 +80,19 @@ func getIpCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
 				}
 				dieDone()
 			},
+		}, {
+			Name:        "reverse",
+			Usage:       "Return the reverse of IP",
+			Description: "ovh ip reverse XXX.XXX.XXX.XXX",
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 1)
+				reverse, err := ipr.GetReverse(c.Args().First())
+				if err != nil {
+					dieError(err)
+				}
+				fmt.Println(reverse)
+				dieOk()
+			},
 		},
 	}
 	return
