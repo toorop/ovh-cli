@@ -1,5 +1,8 @@
 # OVH CLI
 
+
+### WARNING reboot in progress
+
 ovh-cli brings OVH services to the command line.
 
 <center>
@@ -26,11 +29,11 @@ In order to access to your account, the app need your authorization. You have to
 On Linux and MacOs run app with :
 
 	./ovh
-	
+
 On windows with :
 
 	./ovh.exe
-	
+
 
 ## Avalaible commands
 We will consider Linux (or MacOS) version, just replace *ovh* by *ovh.exe* if you are using Windows.
@@ -63,29 +66,29 @@ Example :
 
 	OPTIONS:
    		--help, -h	show help
-   
+
 * [IP](#ip)
 	* [List IP blocks](#list-ip-blocks)
 	* [Firewall](#firewall)
 		* [List IP under firewall](#list-ips-of-an-ip-block-which-are-under-firewall)
 		* [Add an IP on the firewall](#add-an-ip-on-firewall)
-		* [Remove an IP from firewall](#remove-an-ip-from-firewall) 
+		* [Remove an IP from firewall](#remove-an-ip-from-firewall)
 		* [Get properties of an IP](#get-properties-of-a-firewalled-ip)
 		* [Update properties of an IP](#update-ip-properties)
 		* [List firewall rules](#list-firewall-rules)
 		* [Add a rule on an IP](#add-a-firewall-rule)
 		* [Remove a firewall rule](#remove-a-firewall-rule)
-		* [Get info about a firewall rule](#get-info-about-a-firewall-rule) 
+		* [Get info about a firewall rule](#get-info-about-a-firewall-rule)
 	* [Spam](#spam)
 		* [List spamming IP of an IP block](#list-spamming-ip-of-an-ip-block)
   		* [Get info about a spamming IP](#get-more-info-about-a-spamming-ip)
   		* [Unblock a blocked IP](#unblock-a-blocked-ip)
   		* [Get statistics about a spamming IP for a time period](#get-statistics-about-a-spamming-ip-for-a-time-period)
   		* [Get IP which are currently blocked for spam](#get-ip-which-are-currently-blocked-for-spam-helper)
-* [Server](#server) 
+* [Server](#server)
 	* [Get list of your dedicated servers](2#get-list-of-your-dedicated-servers)
 	* [Get server properties](#get-server-properties)
-	* [Reboot server](#reboot-server) 	
+	* [Reboot server](#reboot-server)
 	* [Get server tasks](#get-server-tasks)
 	* [Get server task properties](#get-server-task-properties)
 	* [Cancel server task](#cancel-server-task)
@@ -94,62 +97,62 @@ Example :
 	* [Send a SMS](#send-a-sms)
 * [Cloud](#cloud)
 	* [List cloud passports](#list-cloud-passports)
-	* [List projects ID](#List-projects-id)	
+	* [List projects ID](#List-projects-id)
   	* [Get project info](#get-project-info)
-  	
-## IP
+
+## IP Block
 #### List IP blocks
-	./ovh ip list [--flag...]
+	./ovh ip block list [--flag...]
 Will return your IP blocks
 
 You can use filter flags :
 
-* --desc: by descrition 
-* --ip: by IP 
+* --desc: by descrition
+* --ip: by IP
 * --routedTo: by routing
 * --type: by type (all|cdn|dedicated|failover|hosted_ssl|housing|loadBalancing|mail|pcc|pci|private|vps|vpn|vrack|xdsl)
 
 Example: if you want IP blocks attached to dedicated server, run the command :
 
-	./ovh ip list --type dedicated
-	
- 
- 
+	./ovh ip block list --type dedicated
+
+
+
 ## FIREWALL
 All commands concerning firewall start with :
 
 	./ovh fw
-	
+
 #### List IPs of an IP block which are under firewall
 
 	./ovh fw list IPBLOCK
-	
+
 Where :
 
 * IPBLOCK : an ip block given by "ovh ip list"
 
-Response : Return a list of IPV4, one per line. Or error.	
+Response : Return a list of IPV4, one per line. Or error.
 
 Example :
-	
+
 	./ovh fw list 176.31.189.121/32
-	176.31.189.121	
-	
+	176.31.189.121
+
 #### Add an IP on firewall
 
 	./ovh fw add IPBLOCK IPV4
-	
+
 Where :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 
 Response : "Done!" if the command succeed an error otherwise.
-	
+
 Example :
 
 	./ovh fw 176.31.189.121/32 176.31.189.121 add
-	Done!	
+	Done!
 
 #### Remove an IP from firewall
 
@@ -158,32 +161,32 @@ Example :
 Where :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 
-Response : "IPV4 removed from firewall" if the command succeed an error otherwise.	
-	
+Response : "IPV4 removed from firewall" if the command succeed an error otherwise.
+
 Example :
-	
+
 	./ovh ip fw 176.31.189.121/32 176.31.189.121 remove
 	176.31.189.121 removed from firewall
-		
+
 #### Get Properties of a firewalled IP
-	
-	./ovh fw getProperties IPBLOCK IPV4 
+
+	./ovh fw getProperties IPBLOCK IPV4
 
 Where :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK		
+* IPV4 : an IP v4 from IPBLOCK
 
 Response : Properties on success, one per line. Error otherwise.
 
-Example 
+Example
 
 	./ovh fw getProperties 176.31.189.121/32 176.31.189.121
 	Ip: 176.31.189.121
 	Enabled: false
-	State: ok				
+	State: ok
 
 #### Update IP properties
 
@@ -192,47 +195,47 @@ Example
 Where :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK		
+* IPV4 : an IP v4 from IPBLOCK
 
 Available flags :
 
-* --enabled bool: enabled|disabled IP on firewall 
+* --enabled bool: enabled|disabled IP on firewall
 
 
 Response : "Done!" if the command succeed. An error if not.
 
 Example :
-	
+
 	ovh fw update 92.222.14.249/32 92.222.14.249 --enabled true
 	Done!
-	
+
 #### List firewall rules
 
-	ovh fw listRules IPBLOCK IPV4 [--state creationPending|ok|removalPending]	
-	
+	ovh fw listRules IPBLOCK IPV4 [--state creationPending|ok|removalPending]
+
 With:
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 
 Flags:
 
  * --state: State of the rule (creationPending|ok|removalPending)
- 
+
 Example:
 
 	ovh fw listRules 92.222.14.249/32 92.222.14.249 --state ok
 	1
-	0	 	
-	
+	0
+
 #### Add a firewall rule
 
 	 ovh fw addRule IPBLOCK IPV4 [--flag...]
-	 
+
 With:
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 
 Flags:
 
@@ -245,11 +248,11 @@ Flags:
  * --tcpFragment: Can only be used with TCP protocol (true|false).
  * --tcpOption: Can only be used with TCP protocol (established|syn)
 
-Examples :	 
+Examples :
 Add a rule	which deny all incoming udp traffic:
-	 
+
 	  ovh fw addRule 92.222.14.249/32 92.222.14.249  --sequence 0 --action deny --protocole udp
-	  
+
 Add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
 
 	ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 0 --action permit --toPort 22 --fromIp 46.105.152.56/32 --protocol tcp  
@@ -257,12 +260,12 @@ Add a rule which allow connection from IP 46.105.152.56 to port 22 (SSH)
 Add a rule wich deny any connection to port 22 (SSH)
 
 	ovh fw addRule 92.222.14.249/32 92.222.14.249 --sequence 1 --action deny --toPort 22 --protocol tcp
-	
+
 Will add a rule wich deny any connection to port 22 (SSH).
 
 Rules are tested from sequence 0 to sequence n. When a rule matches it is applied and no other rules are tested. That mean with those examples that only IP 46.105.152.56 will be able to connect thru SSH to IP 92.222.14.249.
-	  	
-	
+
+
 #### Remove a firewall rule
 
 	 ovh fw removeRule IPBLOCK IPV4 SEQUENCE
@@ -270,23 +273,23 @@ Rules are tested from sequence 0 to sequence n. When a rule matches it is applie
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 * SEQUENCE : Seqeunce number of the rule
-	 
+
 Example :
 
 	ovh fw removeRule 92.222.14.249/32 92.222.14.249 1
 	Done!
 
-	
+
 #### Get info about a firewall rule
-	
+
 	ovh fw getRuleProperties IPBLOCK IPV4 SEQUENCE
-	
+
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 * SEQUENCE : Sequence number of the rule
 
 Response : Formatted rule (see example) or error.
@@ -309,11 +312,11 @@ Example :
 
 
 
-	
+
 ### SPAM
 #### List spamming IP of an IP block
 
-	ovh spam listIp IPBLOCK [--state (blockedForSpam|unblocked|unblocking)]	
+	ovh spam listIp IPBLOCK [--state (blockedForSpam|unblocked|unblocking)]
 
 With :
 
@@ -325,7 +328,7 @@ Flags:
 	* blockeForSpam : Currently blocked for spam
 	* unblocked : previously blocked
 	* unblocking : an unblocking quiery have been made
-	
+
 Response : A list of IPv4 (one per line) or error.
 
 Example :
@@ -336,15 +339,15 @@ Example :
 	178.33.223.43
 
 
-	
+
 #### Get more info about a spamming IP
 
-	ovh spam getProperties IPBLOCK IPV4 
-	
+	ovh spam getProperties IPBLOCK IPV4
+
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 
 Response : Formated info (see example) or error
 
@@ -355,9 +358,9 @@ Example :
 	Last time: 2013-12-28T21:51:37+01:00
 	IP: 91.121.228.135
 	State: unblocked
-	
 
- 		
+
+
 #### Unblock a blocked IP
 
 	ovh spam unblock IPBLOCK IPV4
@@ -365,24 +368,24 @@ Example :
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK	
+* IPV4 : an IP v4 from IPBLOCK
 
 Response : "Done!" on success or error.
 
 Exemple :
-	
+
 	ovh spam unblock 178.33.223.32/28 178.33.223.42
 	ok
-			 		
+
 
 #### Get statistics about a spamming IP for a time period
 
-	ovh spam getStats IPBLOCK IPV4 --from UNIX_TIMESTAMP_START --to UNIX_TIMESTAMP_STOP 
-	
+	ovh spam getStats IPBLOCK IPV4 --from UNIX_TIMESTAMP_START --to UNIX_TIMESTAMP_STOP
+
 With :
 
 * IPBLOCK : an ip block given by "ovh ip list"
-* IPV4 : an IP v4 from IPBLOCK		
+* IPV4 : an IP v4 from IPBLOCK
 
 Flags
 
@@ -416,11 +419,11 @@ Example :
 	Message ID:
 	Destination IP: 91.121.228.128
 	Score: 303
-	
+
 #### Get IP which are currently blocked for spam (helper)
 
 	./ovh spam getBlocked
-	
+
 Response : List of blocked IP, one per line or error
 
 Example :
@@ -428,14 +431,14 @@ Example :
 	./ovh spam getBlocked
 	178.33.223.41
 	178.33.223.42
-	178.33.223.43	
-	
-	
+	178.33.223.43
+
+
 ## SERVER
 ### Get list of your dedicated servers
 
 	./ovh server list
-	
+
 Response: all your server names. One per line.
 
 Example :
@@ -449,7 +452,7 @@ Example :
 
 ### Get server properties
 
-	ovh server getProperties SERVER_NAME 
+	ovh server getProperties SERVER_NAME
 
 With :
 
@@ -478,8 +481,8 @@ Example :
 
 
 ### Reboot server
-	ovh server reboot SERVER_NAME 
-	
+	ovh server reboot SERVER_NAME
+
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
@@ -501,7 +504,7 @@ Example :
 ### Get server tasks
 
 	ovh server getTasks SERVER_NAME --function  --status
-	
+
 With :
 
 * SERVER_NAME : name of the server (from "ovh server list")
@@ -511,10 +514,10 @@ Flags :
 * --function (optional) : filter by function. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables functions.)
 * --status (optional) : filter by status. See [OVH doc](https://api.ovh.com/console/#/dedicated/server/%7BserviceName%7D/task#GET) for availables status.
 
-Response : A list of task ID (1 per line)	
+Response : A list of task ID (1 per line)
 
 Example :
-	
+
 	ovh server getTasks ns309865.ovh.net --function hardReboot --status done
 	2296596
 	2296597
@@ -522,7 +525,7 @@ Example :
 
 ### Get server task properties
 	ovh server getTaskProperties SERVER_NAME TASK_ID
-	
+
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
@@ -541,11 +544,11 @@ Example :
 	Start Date: 2014-06-02 07:51:20 +0000 UTC
 	Done Date: 2014-06-02 07:53:10 +0000 UTC
 
-	
+
 ### Cancel server task
 
 	ovh server cancelTask SERVER_NAME TASK_ID
-	
+
 With :
 
 * SERVER_NAME : name of the server (from ./ovh server list)
@@ -554,31 +557,31 @@ With :
 Response : "Done!" on success, error... on error
 
 Examples :
-	
+
 	./ovh server cancelTask ks323462.kimsufi.com 2297463
 	Done!
 
 	./ovh server cancelTask ks323462.kimsufi.com 2297463
 	Error!
-	This task is already done	
+	This task is already done
 
 
 ## SMS
 #### List SMS services
 
-	ovh sms listServices	
+	ovh sms listServices
 
 Response : list of SMS services, one per line, or Error
 
 Example :
-	
-	./ovh sms listServices	
+
+	./ovh sms listServices
 	sms-st2-1
-	
+
 #### Send a SMS
 
 	ovh sms send SMS_SERVICE [--flags]
-	
+
 With :
 
 * SMS_SERVICE : A sms service returned by "ovh sms listServices"
@@ -587,7 +590,7 @@ Flags:
 
 * --message: message to send (string - required)
 * --receiver : Receiver phone number. If you have multiple receivers add on --receiver flag by reciever (string - required)
-* -- sender : sender (string - requiered) 
+* -- sender : sender (string - requiered)
 * noStopClause : bool
 * priority : hight|low|medium|veryLow (string)
 * validityPeriod : The maximum time -in minute(s)- before the message is dropped. default 2880 (int)
@@ -611,19 +614,19 @@ Example :
 	Invalid receivers:
 	Valid receivers: +33622203197
 	Credits removed: 1
-	Done!	
-		
+	Done!
+
 
 ## Cloud
 #### List cloud passports
 
-	ovh cloud getPassports	
+	ovh cloud getPassports
 
 Response : list of cloud passports, one per line, or Error
 
 Example :
-	
-	ovh cloud getPassports	
+
+	ovh cloud getPassports
 	publiccloud-passport-xxxxx
 
 #### List projects ID
@@ -633,13 +636,13 @@ Example :
 Response : list of cloud projects id, one per line, or Error
 
 Example :
-	
+
 	ovh cloud getProjectsId
 	a402414c9977XXXXXXXXXXXXXXXXXXXX
 	a402414c997XXXXXXXXXXXXXXXXXXXXX
-	
+
 ### Get project info
-	
+
 	ovh cloud getProject PROJECT_ID
 
 Response: info about this project
@@ -650,12 +653,12 @@ Example:
 	Project Id: a402414c997746e396456d0068a3XXXX
 	Status: ok
 	Creation date: 2015-05-06T20:20:26+02:00
-	Description: 
+	Description:
 
 
 
 
-	 	
+
 ## Roadmap
 
 * /cloud
@@ -687,17 +690,4 @@ Example:
 * /telephony todo
 * /vps todo
 * /vrack todo
-* /xdsl todo 	
-	
-
-	
-	
-	
-	
-
-
-
-
-	
-
-
+* /xdsl todo
