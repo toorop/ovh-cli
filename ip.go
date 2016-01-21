@@ -50,7 +50,7 @@ func getIPCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
 						if c.Bool("json") {
 							buf, err := json.Marshal(IPBlocks)
 							dieOnError(err)
-							dieOk(string(buf))
+							fmt.Println(string(buf))
 						}
 						for _, i := range IPBlocks {
 							fmt.Println(i)
@@ -59,17 +59,29 @@ func getIPCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
 					},
 				},
 				// Get properties of a block
-				/*	{
+				{
 					Name:        "properties",
 					Description: "Get properties of an IP block.",
 					Usage:       "ovh ip block properties IPBLOCK" + NLTAB + "Example: ovh ip block properties 91.121.228.135/32",
+					Flags: []cli.Flag{
+						cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+					},
 					Action: func(c *cli.Context) {
 						dieIfArgsMiss(len(c.Args()), 1)
-						properties, err := ipr.GetIPProperties(c.Args().First())
+						block := ip.IPBlock(c.Args().First())
+						properties, err := IPClient.GetBlockProperties(block)
 						dieOnError(err)
-						dieOk(fmt.Sprintf("IP: %s%sType: %s%sDescription: %s%sRouted to: %s", properties.Ip, NL, properties.Type, NL, properties.Description, NL, properties.RoutedTo.ServiceName))
+						if c.Bool("json") {
+							buf, err := json.Marshal(properties)
+							dieOnError(err)
+							fmt.Println(string(buf))
+						} else {
+							fmt.Println(properties.String())
+						}
+						dieOk()
+						//dieOk(fmt.Sprintf("IP: %s%sType: %s%sDescription: %s%sRouted to: %s", properties.Ip, NL, properties.Type, NL, properties.Description, NL, properties.RoutedTo.ServiceName))
 					},
-				},*/
+				},
 			}, // end of block subCommands
 		}, // end of ip subcommands
 
