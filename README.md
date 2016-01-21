@@ -69,6 +69,7 @@ Example :
 
 * [IP](#ip)
 	* [List IP blocks](#list-ip-blocks)
+	* [Get IP block properties](#get-block-properties)
 	* [Firewall](#firewall)
 		* [List IP under firewall](#list-ips-of-an-ip-block-which-are-under-firewall)
 		* [Add an IP on the firewall](#add-an-ip-on-firewall)
@@ -111,12 +112,20 @@ You can use filter flags :
 * --ip: by IP
 * --routedTo: by routing
 * --type: by type (all|cdn|dedicated|failover|hosted_ssl|housing|loadBalancing|mail|pcc|pci|private|vps|vpn|vrack|xdsl)
+* --json display output as JSON
 
 Example: if you want IP blocks attached to dedicated server, run the command :
 
 	./ovh ip block list --type dedicated
 
+#### Get block properties
+Return properties of an IP block
 
+	./ovh ip block properties IPBLOCK
+
+Options:
+
+* --json display output as JSON
 
 ## FIREWALL
 All commands concerning firewall start with :
