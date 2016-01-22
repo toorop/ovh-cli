@@ -11,14 +11,14 @@ import (
 )
 
 // getIpCmds return commands for Ip section
-func getIPCmds(client *govh.OVHClient) (ipCmds []cli.Command) {
-	IPClient, err := ip.New(client)
+func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
+	IPClient, err := ip.New(OVHClient)
 	if err != nil {
 		return
 	}
 
 	// Ip commands
-	ipCmds = []cli.Command{
+	cmds = []cli.Command{
 		// IPBLock
 		{
 			Name:        "block",

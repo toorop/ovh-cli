@@ -150,6 +150,12 @@ OPTIONS:
 	// Main  getFwCmds
 	app.Commands = []cli.Command{
 		{
+			Name:        "domain",
+			Usage:       "domain subsection",
+			Description: "Commands about domains",
+			Subcommands: getDomainCmds(client),
+		},
+		{
 			Name:        "ip",
 			Usage:       "IP subsection",
 			Description: "Commands about IP",
