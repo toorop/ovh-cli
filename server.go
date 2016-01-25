@@ -103,7 +103,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 				if err != nil {
 					dieError(err)
 				}
-				err = sr.CancelTask(c.Args().Get(0), taskID)
+				err = sr.CancelTask(c.Args().Get(0), int(taskID))
 				dieOnError(err)
 				dieOk()
 			},

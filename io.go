@@ -8,11 +8,11 @@ import (
 )
 
 // dieError outputs error and exit 1
-func dieError(v ...interface{}) {
-	fmt.Print("ERR")
-	if len(v) != 0 {
-		fmt.Println(v)
-	}
+func dieError(err error) {
+	fmt.Println("Error:", err)
+	/*if len(v) != 0 {
+		fmt.Println(v[0])
+	}*/
 	os.Exit(1)
 }
 
@@ -27,7 +27,7 @@ func dieOnError(err error) {
 // dieInvalidKey will exit in case of client key has expired or
 // is not valid
 func dieInvalidConsumerKey() {
-	dieError("Your credentials seems to have expired.", NL, "Delete environement variable OVH_CONSUMER_KEY and relaunch ovh-cli to generate a new one.", NL, "On Linux|MacOS: export OVH_CONSUMER_KEY=", NL, "On windows: SET OVH_CONSUMER_KEY=")
+	dieError(fmt.Errorf("Your credentials seems to have expired." + "Delete environement variable OVH_CONSUMER_KEY and relaunch ovh-cli to generate a new one." + "On Linux|MacOS: export OVH_CONSUMER_KEY=" + "On windows: SET OVH_CONSUMER_KEY="))
 }
 
 // Exit & and display error on bad arguments
@@ -36,7 +36,7 @@ func dieBadArgs(msg ...string) {
 	if len(msg) > 0 {
 		errMsg = msg[0]
 	}
-	dieError(errMsg)
+	dieError(fmt.Errorf(errMsg))
 }
 
 // Exit if args are missing
