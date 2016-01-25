@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
@@ -44,7 +45,7 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 				dieIfArgsMiss(len(c.Args()), 1)
 				properties, err := sr.GetProperties(c.Args().First())
 				dieOnError(err)
-				print(formatOutput(properties, c.Bool("json")))
+				println(formatOutput(properties, c.Bool("json")))
 				dieOk()
 			},
 		},
@@ -73,61 +74,59 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 			},
 		},
 
+		{
+			Name:        "task",
+			Usage:       "Return properties of a server task",
+			Description: "ovh server task SERVER TASKID" + NLTAB + "Example: ovh server task ns309865.ovh.net 456",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+			},
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 2)
+				taskID, err := strconv.ParseInt(c.Args().Get(1), 10, 64)
+				if err != nil {
+					dieError(err)
+				}
+				task, err := sr.GetTask(c.Args().First(), int(taskID))
+				dieOnError(err)
+				println(formatOutput(task, c.Bool("json")))
+				dieOk()
+			},
+		},
+
+		{
+			Name:        "canceltask",
+			Usage:       "Cancel a server task",
+			Description: "ovh server canceltask SERVER TASKID" + NLTAB + "Example: ovh server canceltask ks323462.kimsufi.com 4319579",
+			Action: func(c *cli.Context) {
+				taskID, err := strconv.ParseUint(c.Args().Get(1), 10, 64)
+				if err != nil {
+					dieError(err)
+				}
+				err = sr.CancelTask(c.Args().Get(0), taskID)
+				dieOnError(err)
+				dieOk()
+			},
+		},
 		/*
-			        	{
-							Name:        "getTaskProperties",
-							Usage:       "Return properties of a server task",
-							Description: "ovh server getTaskProperties SERVER TASKID" + NLTAB + "Example: ovh server getTaskProperties ns309865.ovh.net 456",
-							Action: func(c *cli.Context) {
-								dieIfArgsMiss(len(c.Args()), 2)
-								taskId, err := strconv.ParseUint(c.Args().Get(1), 10, 64)
-								if err != nil {
-									dieError(err)
-								}
-								task, err := sr.GetTaskProperties(c.Args().First(), taskId)
-								dieOnError(err)
-								fmt.Printf("Task ID: %d%s", task.Id, NL)
-								fmt.Printf("Function: %s%s", task.Function, NL)
-								fmt.Printf("Status: %s%s", task.Status, NL)
-								fmt.Printf("Comment: %s%s", task.Comment, NL)
-								fmt.Printf("Last Upadte: %s%s", task.LastUpdate, NL)
-								fmt.Printf("Start Date: %s%s", task.StartDate, NL)
-								fmt.Printf("Done Date: %s%s", task.DoneDate, NL)
-								dieOk()
-							},
-						},
-						{
-							Name:        "cancelTask",
-							Usage:       "Cancel a server task",
-							Description: "ovh server cancelTask SERVER TASKID" + NLTAB + "Example: ovh server cancelTask ks323462.kimsufi.com 4319579",
-							Action: func(c *cli.Context) {
-								taskId, err := strconv.ParseUint(c.Args().Get(1), 10, 64)
-								if err != nil {
-									dieError(err)
-								}
-								err = sr.CancelTask(c.Args().Get(0), taskId)
-								dieOnError(err)
-								dieOk()
-							},
-						},
-						{
-							Name:        "reboot",
-							Usage:       "Create a new reboot task",
-							Description: "ovh server reboot SERVER" + NLTAB + "Example: ovh server reboot ks323462.kimsufi.com",
-							Action: func(c *cli.Context) {
-								dieIfArgsMiss(len(c.Args()), 1)
-								task, err := sr.Reboot(c.Args().First())
-								dieOnError(err)
-								fmt.Printf("Task ID: %d%s", task.Id, NL)
-								fmt.Printf("Function: %s%s", task.Function, NL)
-								fmt.Printf("Status: %s%s", task.Status, NL)
-								fmt.Printf("Comment: %s%s", task.Comment, NL)
-								fmt.Printf("Last Upadte: %s%s", task.LastUpdate, NL)
-								fmt.Printf("Start Date: %s%s", task.StartDate, NL)
-								fmt.Printf("Done Date: %s%s", task.DoneDate, NL)
-								dieOk()
-							},
-						},*/
+			{
+				Name:        "reboot",
+				Usage:       "Create a new reboot task",
+				Description: "ovh server reboot SERVER" + NLTAB + "Example: ovh server reboot ks323462.kimsufi.com",
+				Action: func(c *cli.Context) {
+					dieIfArgsMiss(len(c.Args()), 1)
+					task, err := sr.Reboot(c.Args().First())
+					dieOnError(err)
+					fmt.Printf("Task ID: %d%s", task.Id, NL)
+					fmt.Printf("Function: %s%s", task.Function, NL)
+					fmt.Printf("Status: %s%s", task.Status, NL)
+					fmt.Printf("Comment: %s%s", task.Comment, NL)
+					fmt.Printf("Last Upadte: %s%s", task.LastUpdate, NL)
+					fmt.Printf("Start Date: %s%s", task.StartDate, NL)
+					fmt.Printf("Done Date: %s%s", task.DoneDate, NL)
+					dieOk()
+				},
+			},*/
 	}
 
 	/*
