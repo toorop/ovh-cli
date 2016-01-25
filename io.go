@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	//"runtime/debug"
@@ -47,13 +48,23 @@ func dieIfArgsMiss(nbArgs, requiered int) {
 
 func dieOk(v ...interface{}) {
 	if len(v) != 0 {
-		fmt.Println(v)
+		fmt.Printf("%v\n", v[0])
 	}
 	os.Exit(0)
 }
 
 func dieDone() {
 	dieOk("Done!")
+}
+
+// formatOutput return formated structure (json or raw string)
+func formatOutput(data interface{}, toJSON bool) string {
+	if toJSON {
+		buf, err := json.Marshal(data)
+		dieOnError(err)
+		return string(buf)
+	}
+	return fmt.Sprintf("%s", data)
 }
 
 /*func debug(v ...interface{}) {
