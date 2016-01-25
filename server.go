@@ -108,25 +108,22 @@ func getServerCmds(client *govh.OVHClient) (serverCmds []cli.Command) {
 				dieOk()
 			},
 		},
-		/*
-			{
-				Name:        "reboot",
-				Usage:       "Create a new reboot task",
-				Description: "ovh server reboot SERVER" + NLTAB + "Example: ovh server reboot ks323462.kimsufi.com",
-				Action: func(c *cli.Context) {
-					dieIfArgsMiss(len(c.Args()), 1)
-					task, err := sr.Reboot(c.Args().First())
-					dieOnError(err)
-					fmt.Printf("Task ID: %d%s", task.Id, NL)
-					fmt.Printf("Function: %s%s", task.Function, NL)
-					fmt.Printf("Status: %s%s", task.Status, NL)
-					fmt.Printf("Comment: %s%s", task.Comment, NL)
-					fmt.Printf("Last Upadte: %s%s", task.LastUpdate, NL)
-					fmt.Printf("Start Date: %s%s", task.StartDate, NL)
-					fmt.Printf("Done Date: %s%s", task.DoneDate, NL)
-					dieOk()
-				},
-			},*/
+
+		{
+			Name:        "reboot",
+			Usage:       "Create a new reboot task",
+			Description: "ovh server reboot SERVER [--json]" + NLTAB + "Example: ovh server reboot ks323462.kimsufi.com --json",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+			},
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 1)
+				task, err := sr.Reboot(c.Args().First())
+				dieOnError(err)
+				println(formatOutput(task, c.Bool("json")))
+				dieOk()
+			},
+		},
 	}
 
 	/*
