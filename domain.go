@@ -46,9 +46,9 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 			Subcommands: []cli.Command{
 				// List Ip Blocks
 				{
-					Name:        "getrecordid",
+					Name:        "getrecordsid",
 					Description: "returns record IDs for a zone",
-					Usage:       "ovh domain zone getrecordid ZONE [--field FIELD] [--sub SUBDOMAIN] [--json]" + NLTAB + "Example: ovh domain zone getrecordid ovh.com --field A --json",
+					Usage:       "ovh domain zone getrecordsid ZONE [--field FIELD] [--sub SUBDOMAIN] [--json]" + NLTAB + "Example: ovh domain zone getrecordsid ovh.com --field A --json",
 					Flags: []cli.Flag{
 						cli.StringFlag{Name: "field", Value: "", Usage: "Filter by DNS field type (A, MX, TXT,...)"},
 						cli.StringFlag{Name: "sub", Value: "", Usage: "Filter by subdomain"},
@@ -56,7 +56,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 					},
 					Action: func(c *cli.Context) {
 						dieIfArgsMiss(len(c.Args()), 1)
-						IDs, err := domClient.GetRecordIDs(c.Args().First(), domain.GetRecordIDsOptions{
+						IDs, err := domClient.GetRecordIDs(c.Args().First(), domain.GetRecordsOptions{
 							FieldType: c.String("field"),
 							SubDomain: c.String("sub"),
 						})
@@ -68,6 +68,32 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						} else {
 							for _, ID := range IDs {
 								fmt.Println(ID)
+							}
+						}
+					},
+				}, {
+					Name:        "getrecords",
+					Description: "returns records for a zone",
+					Usage:       "ovh domain zone getrecords ZONE [--field FIELD] [--sub SUBDOMAIN] [--json]" + NLTAB + "Example: ovh domain zone getrecordsid ovh.com --field A --json",
+					Flags: []cli.Flag{
+						cli.StringFlag{Name: "field", Value: "", Usage: "Filter by DNS field type (A, MX, TXT,...)"},
+						cli.StringFlag{Name: "sub", Value: "", Usage: "Filter by subdomain"},
+						cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+					},
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						records, err := domClient.GetRecords(c.Args().First(), domain.GetRecordsOptions{
+							FieldType: c.String("field"),
+							SubDomain: c.String("sub"),
+						})
+						dieOnError(err)
+						if c.Bool("json") {
+							buf, err := json.Marshal(records)
+							dieOnError(err)
+							fmt.Println(string(buf))
+						} else {
+							for _, record := range records {
+								fmt.Println(record.String())
 							}
 						}
 					},
