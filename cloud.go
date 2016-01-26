@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/codegangsta/cli"
 
 	"github.com/toorop/govh"
@@ -18,60 +15,54 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 	}
 	cloudCmds = []cli.Command{
 		{
-			Name:        "getPassports",
+			Name:        "passports",
 			Usage:       "Return a list of cloud passports",
-			Description: "Example: ovh cloud getPassport",
+			Description: "Example: ovh cloud passports",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "json", Usage: "if set output as JSON"},
+			},
 			Action: func(c *cli.Context) {
 				passports, err := cloud.GetPassports()
 				dieOnError(err)
-				for _, passport := range passports {
-					fmt.Println(passport)
-				}
+				println(formatOutput(passports, c.Bool("json")))
 				dieOk()
 			},
 		}, {
-			Name:        "getPrices",
+			Name:        "prices",
 			Usage:       "Return a list of cloud prices",
-			Description: "Example: ovh cloud getPrices",
+			Description: "Example: ovh cloud prices",
 			Flags: []cli.Flag{
 				cli.BoolFlag{Name: "json", Usage: "if set output as JSON"},
 			},
 			Action: func(c *cli.Context) {
 				prices, err := cloud.GetPrices()
 				dieOnError(err)
-				//	fmt.Println(prices.ProjectCreation)
-				if c.Bool("json") {
-					fmt.Println(prices.JSON())
-				} else {
-					fmt.Println(prices.String())
-				}
+				println(formatOutput(prices, c.Bool("json")))
 				dieOk()
 			},
 		}, {
 
-			Name:        "getProjectsId",
+			Name:        "projectids",
 			Usage:       "Return a list of projects ID",
-			Description: "Example: ovh cloud getProjectsId",
+			Description: "Example: ovh cloud projectsid",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "json", Usage: "if set output as JSON"},
+			},
 			Action: func(c *cli.Context) {
-				ids, err := cloud.GetProjectsId()
+				ids, err := cloud.GetProjectIDs()
 				dieOnError(err)
-				for _, id := range ids {
-					fmt.Println(id)
-				}
+				println(formatOutput(ids, c.Bool("json")))
 				dieOk()
 			},
 		}, {
-			Name:        "getProject",
+			Name:        "project",
 			Usage:       "Return project info",
-			Description: "Example: ovh cloud getProject PROJECT_ID",
+			Description: "Example: ovh cloud project PROJECT_ID",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
 				project, err := cloud.GetProject(c.Args().First())
 				dieOnError(err)
-				fmt.Printf("Project Id: %s%s", project.Id, NL)
-				fmt.Printf("Status: %s%s", project.Status, NL)
-				fmt.Printf("Creation date: %s%s", project.CreationDate.Format(time.RFC3339), NL)
-				fmt.Printf("Description: %s%s", project.Description, NL)
+				println(formatOutput(project, c.Bool("json")))
 				dieOk()
 			},
 		},
