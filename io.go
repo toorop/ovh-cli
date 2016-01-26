@@ -60,27 +60,36 @@ func dieDone() {
 }
 
 // formatOutput return formated structure (json or raw string)
-func formatOutput(data interface{}, toJSON bool, iterate ...int) string {
+func formatOutput(data interface{}, toJSON bool) string {
 	if toJSON {
 		buf, err := json.Marshal(data)
 		dieOnError(err)
 		return string(buf)
 	}
 	out := ""
-	switch reflect.TypeOf(data).Kind() {
+
+	// slice ?
+	s := reflect.ValueOf(data)
+	switch s.Kind() {
 	case reflect.Slice:
-		s := reflect.ValueOf(data)
+		ret := make([]interface{}, s.Len())
 		for i := 0; i < s.Len(); i++ {
-			out += fmt.Sprintf("%s\n", s.Index(i))
+			ret[i] = s.Index(i).Interface()
+		}
+
+		for _, v := range ret {
+			out += fmt.Sprintf("%v\n", v)
 		}
 	default:
-		out = fmt.Sprintf("%s", data)
+		out = fmt.Sprintf("%v", data)
 	}
+
 	// clean ending
 	if strings.HasSuffix(out, "\n") {
 		out = out[:len(out)-1]
 	}
 	return out
+
 }
 
 /*func debug(v ...interface{}) {

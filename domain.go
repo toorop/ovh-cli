@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/codegangsta/cli"
@@ -31,7 +29,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				domains, err := domClient.List(c.String("owner"))
 				dieOnError(err)
-				println(formatOutput(domains, c.Bool("json"), 1))
+				println(formatOutput(domains, c.Bool("json")))
 			},
 		}, {
 			Name:        "zone",
@@ -62,13 +60,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 							SubDomain: c.String("sub"),
 						})
 						dieOnError(err)
-						if c.Bool("json") {
-							buf, err := json.Marshal(record)
-							dieOnError(err)
-							fmt.Println(string(buf))
-						} else {
-							fmt.Println(record.String())
-						}
+						println(formatOutput(record, c.Bool("json")))
 					},
 				},
 				// List Ip Blocks
@@ -88,15 +80,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 							SubDomain: c.String("sub"),
 						})
 						dieOnError(err)
-						if c.Bool("json") {
-							buf, err := json.Marshal(IDs)
-							dieOnError(err)
-							fmt.Println(string(buf))
-						} else {
-							for _, ID := range IDs {
-								fmt.Println(ID)
-							}
-						}
+						println(formatOutput(IDs, c.Bool("json")))
 					},
 				}, {
 					Name:        "getrecords",
@@ -114,15 +98,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 							SubDomain: c.String("sub"),
 						})
 						dieOnError(err)
-						if c.Bool("json") {
-							buf, err := json.Marshal(records)
-							dieOnError(err)
-							fmt.Println(string(buf))
-						} else {
-							for _, record := range records {
-								fmt.Println(record.String())
-							}
-						}
+						println(formatOutput(records, c.Bool("json")))
 					},
 				}, {
 					Name:        "delrecord",
