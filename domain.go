@@ -31,15 +31,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 			Action: func(c *cli.Context) {
 				domains, err := domClient.List(c.String("owner"))
 				dieOnError(err)
-				if c.Bool("json") {
-					buf, err := json.Marshal(domains)
-					dieOnError(err)
-					fmt.Println(string(buf))
-				} else {
-					for _, domain := range domains {
-						fmt.Println(domain)
-					}
-				}
+				println(formatOutput(domains, c.Bool("json"), 1))
 			},
 		}, {
 			Name:        "zone",

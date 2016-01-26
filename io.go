@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
+	"strings"
 	//"runtime/debug"
 )
 
@@ -58,13 +60,27 @@ func dieDone() {
 }
 
 // formatOutput return formated structure (json or raw string)
-func formatOutput(data interface{}, toJSON bool) string {
+func formatOutput(data interface{}, toJSON bool, iterate ...int) string {
 	if toJSON {
 		buf, err := json.Marshal(data)
 		dieOnError(err)
 		return string(buf)
 	}
-	return fmt.Sprintf("%s", data)
+	out := ""
+	switch reflect.TypeOf(data).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(data)
+		for i := 0; i < s.Len(); i++ {
+			out += fmt.Sprintf("%s\n", s.Index(i))
+		}
+	default:
+		out = fmt.Sprintf("%s", data)
+	}
+	// clean ending
+	if strings.HasSuffix(out, "\n") {
+		out = out[:len(out)-1]
+	}
+	return out
 }
 
 /*func debug(v ...interface{}) {
