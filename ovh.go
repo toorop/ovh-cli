@@ -185,7 +185,7 @@ OPTIONS:
 			Name:        "spam",
 			Usage:       "Spam subsection",
 			Description: "Commands about OVH antispam protection",
-			//Subcommands: getSpamCmds(client),
+			Subcommands: getSpamCmds(client),
 		}, {
 			Name:        "cloud",
 			Usage:       "Cloud subsection",

@@ -107,7 +107,8 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 					},
 					Action: func(c *cli.Context) {
 						dieIfArgsMiss(len(c.Args()), 1)
-						dieOnError(IPClient.UpdateBlockProperties(c.Args().First(), c.String("desc")))
+						block := ip.IPBlock(c.Args().First())
+						dieOnError(IPClient.UpdateBlockProperties(block, c.String("desc")))
 						dieOk()
 					},
 				}, /*{
@@ -137,53 +138,6 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 				},*/
 			},
 		}, // end of block subCommands
-
-		/*
-			// Reverse
-			{
-				Name:        "reverse",
-				Description: "commnands to interact with IP reverse",
-				Subcommands: []cli.Command{
-					{
-						Name:        "get",
-						Usage:       "Return the reverse of IP",
-						Description: "ovh ip reverse XXX.XXX.XXX.XXX",
-						Flags: []cli.Flag{
-							cli.BoolFlag{Name: "json", Usage: "output as JSON"},
-						},
-						Action: func(c *cli.Context) {
-							dieIfArgsMiss(len(c.Args()), 1)
-							RIP, err := IPClient.GetReverse(c.Args().First())
-							if err != nil {
-								dieError(err)
-							}
-							if c.Bool("json") {
-								t, err := json.Marshal(RIP)
-								if err != nil {
-									dieError(err)
-								}
-								fmt.Println(string(t))
-							} else {
-								fmt.Println(RIP.String())
-							}
-							dieOk()
-						},
-					},
-					{
-						Name:        "set",
-						Usage:       "Set the reverse of IP",
-						Description: "ovh ip reverse set IP REVERSE",
-						Action: func(c *cli.Context) {
-							dieIfArgsMiss(len(c.Args()), 2)
-							err := ipr.SetReverse(c.Args().First(), c.Args()[1])
-							if err != nil {
-								dieError(err)
-							}
-							dieOk()
-						},
-					},
-				},
-			},*/
 	}
 	return
 }
