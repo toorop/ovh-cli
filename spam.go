@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
 	"github.com/toorop/govh/ip"
@@ -44,70 +47,53 @@ func getSpamCmds(client *govh.OVHClient) (cmds []cli.Command) {
 				dieOk()
 
 			},
-		}, /*{
-			Name:        "getStats",
+		}, {
+			Name:        "stats",
 			Usage:       "Get spam stats about a spamming IP.",
-			Description: "ovh spam getStats IPBLOCK IP --from TIMESTAMP_START --to TIMESTAMP_STOP" + NLTAB + "Example: ovh spam getStats 178.33.223.32/28 178.33.223.42 --from 1385251200 --to 1387882630",
+			Description: "ovh spam stats IPBLOCK IP --from TIMESTAMP_START --to TIMESTAMP_STOP" + NLTAB + "Example: ovh spam getStats 178.33.223.32/28 178.33.223.42 --from 1385251200 --to 1387882630",
 			Flags: []cli.Flag{
-				cli.StringFlag{"from", "", "Unix timestamp representing the begining of the peiod (required).", ""},
-				cli.StringFlag{"to", "", "Unix timestamp representing the end of the peiod (required).", ""},
+				cli.StringFlag{Name: "from", Value: "", Usage: "Unix timestamp representing the begining of the peiod (required)."},
+				cli.StringFlag{Name: "to", Value: "", Usage: "Unix timestamp representing the end of the peiod (required)."},
+				cli.BoolFlag{Name: "json", Usage: "output as JSON"},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				if !c.IsSet("from") || !c.IsSet("to") {
-					dieBadArgs()
+				var from, to time.Time
+				from = time.Unix(int64(c.Int("from")), 0)
+				if c.Int("to") == 0 {
+					to = time.Now()
+				} else {
+					to = time.Unix(int64(c.Int("to")), 0)
 				}
-				from := c.Int("from")
-				to := c.Int("to")
-				if from >= to {
-					dieBadArgs()
-				}
-				stats, err := ipr.SpamGetIPStats(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1), time.Unix(int64(from), 0), time.Unix(int64(to), 0))
-				handleErrFromOvh(err)
-				if stats == nil {
-					dieOk("No spam stats for this period")
-				}
-				fmt.Printf("Blocked for the last time: %s%s", time.Unix(stats.Timestamp, 0).Format(time.RFC822Z), NL)
-				fmt.Printf("Number of emails sent: %d%s", stats.Total, NL)
-				fmt.Printf("Number of spams sent: %d%s", stats.NumberOfSpams, NL)
-				fmt.Printf("Average score: %d%s%s", stats.AverageSpamScore, NL, NL)
-				if len(stats.DetectedSpams) > 0 {
-					fmt.Println("Detected Spams : ", NL)
-				}
-				for _, ds := range stats.DetectedSpams {
-					fmt.Println("")
-					fmt.Printf("\tDate: %s%s", time.Unix(ds.Date, 0).Format(time.RFC822Z), NL)
-					fmt.Printf("\tMessage ID: %s%s", ds.MessageId, NL)
-					fmt.Printf("\tDestination IP: %s%s", ds.DestinationIp, NL)
-					fmt.Printf("\tScore: %d%s", ds.Spamscore, NL)
-				}
-				dieOk()
+				stats, err := spamClient.SpamGetIPStats(ip.IPBlock(c.Args().First()), c.Args().Get(1), from, to)
+				dieOnError(err)
+				dieOk(formatOutput(stats, c.Bool("json")))
 			},
 		},
 		{
 			Name:        "unblock",
-			Usage:       "Unblock a locked IP.",
+			Usage:       "Unblock a blocked IP.",
 			Description: "ovh spam unblock IPBLOCK IP" + NLTAB + "Example: ovh spam unblock 91.121.228.135/32 91.121.228.135",
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 2)
-				handleErrFromOvh(ipr.SpamUnblockSpamIP(ip.IPBlock{c.Args().First(), ""}, c.Args().Get(1)))
-				dieDone()
+				dieOnError(spamClient.SpamUnblockSpamIP(ip.IPBlock(c.Args().First()), c.Args().Get(1)))
+				dieOk()
 			},
 		},
+
 		{
-			Name:        "getBlocked",
+			Name:        "getblocked",
 			Usage:       "Retuns IPs which are currently blocked.",
-			Description: "ovh spam getBlocked" + NLTAB + "Example: ovh spam getBlocked",
+			Description: "ovh spam getblocked" + NLTAB + "Example: ovh spam getblocked",
 			Action: func(c *cli.Context) {
-				//dieIfArgsMiss(len(c.Args()), 2)
-				ips, err := ipr.GetBlockedForSpam()
-				handleErrFromOvh(err)
+				ips, err := spamClient.GetBlockedForSpam()
+				dieOnError(err)
 				for _, ip := range ips {
 					fmt.Println(ip)
 				}
 				dieOk()
 			},
-		},*/
+		},
 	}
 	return
 }
