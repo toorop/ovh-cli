@@ -48,7 +48,7 @@ func getMeCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 				}, {
 					// CMD getbyid - returns bill by its ID
 					Name:        "getbyid",
-					Description: "return bill from its ID",
+					Description: "returns bill from its ID",
 					Usage:       "ovh me bill getbyid ID [--json]" + NLTAB + "Example: ovh me bill getbyid 123456789 --json",
 					Flags: []cli.Flag{
 						cli.BoolFlag{Name: "json", Usage: "output as JSON"},
@@ -58,6 +58,32 @@ func getMeCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						bill, err := meClient.GetBillByID(c.Args().First())
 						dieOnError(err)
 						println(formatOutput(bill, c.Bool("json")))
+						dieOk()
+					},
+				}, {
+					// CMD dowload - download bills as PDF
+					Name:        "download",
+					Description: "download bills from dateFrom to dateTo and save them to path",
+					Usage:       "ovh me bill download --path SAVEPATH [--from TIMESTAMP] [--to TIMESTAMP] [--json]" + NLTAB + "Example: ovh me bill list --path /tmp --from 1420066800 --to 1451602800",
+					Flags: []cli.Flag{
+						cli.IntFlag{Name: "from", Value: 0, Usage: "Date from"},
+						cli.IntFlag{Name: "to", Value: 0, Usage: "Date to"},
+					},
+
+					Action: func(c *cli.Context) {
+						// TODO check path
+
+						var dateFrom, dateTo time.Time
+						dateFrom = time.Unix(int64(c.Int("from")), 0)
+						if c.Int("to") == 0 {
+							dateTo = time.Now()
+						} else {
+							dateTo = time.Unix(int64(c.Int("to")), 0)
+						}
+						_, err := meClient.GetBillIDs(dateFrom, dateTo)
+						dieOnError(err)
+						// TODO DL && save files
+
 						dieOk()
 					},
 				},

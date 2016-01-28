@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/codegangsta/cli"
 	"github.com/toorop/govh"
 	"github.com/toorop/govh/sms"
@@ -17,43 +14,42 @@ func getSmsCmds(client *govh.OVHClient) (smsCmds []cli.Command) {
 	}
 	smsCmds = []cli.Command{
 		{
-			Name:        "listServices",
+			Name:        "services",
 			Usage:       "Return a list of sms services ",
-			Description: "ovh sms listServices" + NLTAB + "Example: ovh sms listServices",
+			Description: "ovh sms services" + NLTAB + "Example: ovh sms services",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+			},
 			Action: func(c *cli.Context) {
-				services, err := sr.ListServices()
+				services, err := sr.GetServices()
 				dieOnError(err)
-				for _, service := range services {
-					fmt.Println(service)
-				}
+				println(formatOutput(services, c.Bool("json")))
 				dieOk()
 			},
 		},
 		{
 			Name:        "send",
 			Usage:       "Send an new SMS",
-			Description: `ovh sms send SERVICE [--flags...]" + NLTAB + "Example: ovh sms send sms-st2-1 --sender +33979XXXX --receivers +336222XXXX +336221XXXX --message "Test from ovh-cli"`,
+			Description: `ovh sms send SERVICE --from SENDER --to RECEIVER1 [RECEIVER2 RECEIVER3...RECEIVERX] --message MESSAGE + NLTAB + "Example: ovh sms send sms-st2-1 --from +33979XXXX --to +336222XXXX +336221XXXX --message "Test from ovh-cli"`,
 			Flags: []cli.Flag{
-				cli.StringFlag{"sender", "", "The sender phone number in international format (+33XXXXXX for France for ex). Required.", ""},
-				cli.StringSliceFlag{"receiver", &cli.StringSlice{}, "Receiver phone number. If you have multiple receivers add on --receiver flag by reciever. Requiered.", ""},
-				cli.StringFlag{"message", "", "The message you want to send. Required", ""},
+				cli.StringFlag{Name: "from", Value: "", Usage: "The sender phone number in international format (+33XXXXXX for France for ex). Required."},
+				cli.StringSliceFlag{Name: "to", Value: &cli.StringSlice{}, Usage: "Receiver phone number. If you have multiple receivers add on --receiver flag by reciever. Requiered."},
+				cli.StringFlag{Name: "message", Value: "", Usage: "The message you want to send. Required"},
+				cli.BoolFlag{Name: "json", Usage: "output as JSON"},
 			},
 			Action: func(c *cli.Context) {
 				dieIfArgsMiss(len(c.Args()), 1)
 
 				// sender
-				sender := c.String("sender")
+				sender := c.String("from")
 				if sender == "" {
-					dieBadArgs("Required flag --sender is missing")
+					dieBadArgs("Required flag --from is missing")
 				}
 				// recievers
-				receivers := c.StringSlice("receiver")
+				receivers := c.StringSlice("to")
 				if receivers == nil {
-					dieBadArgs("Required flag --receivers is missing")
+					dieBadArgs("Required flag --to is missing")
 				}
-				/*for _, rcv := range receivers {
-					fmt.Println(rcv)
-				}*/
 
 				// message
 				message := c.String("message")
@@ -77,13 +73,8 @@ func getSmsCmds(client *govh.OVHClient) (smsCmds []cli.Command) {
 				}
 				resp, err := sr.AddJob(c.Args().First(), job)
 				dieOnError(err)
-				for _, id := range resp.Ids {
-					fmt.Println("Job ID:", id)
-				}
-				fmt.Println("Invalid receivers:", strings.Join(resp.InvalidReceivers, ", "))
-				fmt.Println("Valid receivers:", strings.Join(resp.ValidReceivers, ", "))
-				fmt.Println("Credits removed:", fmt.Sprintf("%d", resp.TotalCreditsRemoved))
-				dieDone()
+				println(formatOutput(resp, c.Bool("json")))
+				dieOk()
 			},
 		},
 	}

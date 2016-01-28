@@ -61,6 +61,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						})
 						dieOnError(err)
 						println(formatOutput(record, c.Bool("json")))
+						dieOk()
 					},
 				},
 				// List Ip Blocks
