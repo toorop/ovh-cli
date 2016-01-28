@@ -191,6 +191,11 @@ OPTIONS:
 			Usage:       "Cloud subsection",
 			Description: "Commands about OVH cloud",
 			Subcommands: getCloudCmds(client),
+		}, {
+			Name:        "dedicatedcloud",
+			Usage:       "Dedicated Cloud subsection",
+			Description: "Commands about OVH Dedicated Cloud",
+			Subcommands: getDedicatedCloudCmds(client),
 		},
 	}
 
