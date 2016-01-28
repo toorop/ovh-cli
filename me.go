@@ -1,6 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/codegangsta/cli"
@@ -63,15 +68,29 @@ func getMeCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 				}, {
 					// CMD dowload - download bills as PDF
 					Name:        "download",
-					Description: "download bills from dateFrom to dateTo and save them to path",
+					Description: "download bills from dateFrom to dateTo and save them to directory path",
 					Usage:       "ovh me bill download --path SAVEPATH [--from TIMESTAMP] [--to TIMESTAMP] [--json]" + NLTAB + "Example: ovh me bill list --path /tmp --from 1420066800 --to 1451602800",
 					Flags: []cli.Flag{
+						cli.StringFlag{Name: "path", Value: "", Usage: "path to save bills pdf"},
 						cli.IntFlag{Name: "from", Value: 0, Usage: "Date from"},
 						cli.IntFlag{Name: "to", Value: 0, Usage: "Date to"},
 					},
 
 					Action: func(c *cli.Context) {
-						// TODO check path
+						savePath := c.String("path")
+						if savePath == "" {
+							dieBadArgs("--path option is missing")
+						}
+
+						savePath, err = filepath.Abs(filepath.Clean(savePath))
+						dieOnError(err)
+						println(savePath)
+						stat, err := os.Stat(savePath)
+						//fmt.Printf("%v - %v\n", stat, err)
+						dieOnError(err)
+						if !stat.IsDir() {
+							dieError(fmt.Errorf("path %s is not a directory", savePath))
+						}
 
 						var dateFrom, dateTo time.Time
 						dateFrom = time.Unix(int64(c.Int("from")), 0)
@@ -80,9 +99,22 @@ func getMeCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						} else {
 							dateTo = time.Unix(int64(c.Int("to")), 0)
 						}
-						_, err := meClient.GetBillIDs(dateFrom, dateTo)
+						IDs, err := meClient.GetBillIDs(dateFrom, dateTo)
 						dieOnError(err)
-						// TODO DL && save files
+						fmt.Println(IDs)
+						// DL && save files
+						for _, ID := range IDs {
+							println("Downloading " + ID)
+							bill, err := meClient.GetBillByID(ID)
+							dieOnError(err)
+							f, err := os.Create(savePath + "/" + ID + ".pdf")
+							dieOnError(err)
+							defer f.Close()
+							resp, err := http.Get(bill.PdfURL)
+							dieOnError(err)
+							defer resp.Body.Close()
+							io.Copy(f, resp.Body)
+						}
 
 						dieOk()
 					},
