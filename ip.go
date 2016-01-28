@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/codegangsta/cli"
@@ -19,6 +17,36 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 
 	// Ip commands
 	cmds = []cli.Command{
+		// IP
+		// Get IP reverse
+		{
+			Name:        "reverse",
+			Description: "Returns the reverse of the IP",
+			Usage:       "ovh ip reverse [--json]" + NLTAB + "Example: ovh ip reverse --json",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+			},
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 1)
+				RIP, err := IPClient.GetReverse(c.Args().First())
+				dieOnError(err)
+				println(formatOutput(RIP, c.Bool("json")))
+				dieOk()
+			},
+		}, {
+			Name:        "setreverse",
+			Description: "Update the reverse of the IP",
+			Usage:       "ovh ip setreverse IP REVERSE [--json]" + NLTAB + "Example: ovh ip setreverse 8.8.8.8 www.ovh.com",
+			Flags: []cli.Flag{
+				cli.StringFlag{Name: "reverse", Value: "", Usage: "new reverse for IP"},
+				cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+			},
+			Action: func(c *cli.Context) {
+				dieIfArgsMiss(len(c.Args()), 2)
+				dieOnError(IPClient.SetReverse(c.Args().First(), c.Args()[1]))
+			},
+		},
+
 		// IPBLock
 		{
 			Name:        "block",
@@ -46,15 +74,7 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						}
 						IPBlocks, err := IPClient.List(fDesc, fIP, fRoutedTo, fType)
 						dieOnError(err)
-						// output as json ?
-						if c.Bool("json") {
-							buf, err := json.Marshal(IPBlocks)
-							dieOnError(err)
-							fmt.Println(string(buf))
-						}
-						for _, i := range IPBlocks {
-							fmt.Println(i)
-						}
+						println(formatOutput(IPBlocks, c.Bool("json")))
 						dieOk()
 					},
 				},
@@ -71,43 +91,54 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						block := ip.IPBlock(c.Args().First())
 						properties, err := IPClient.GetBlockProperties(block)
 						dieOnError(err)
-						if c.Bool("json") {
-							buf, err := json.Marshal(properties)
-							dieOnError(err)
-							fmt.Println(string(buf))
-						} else {
-							fmt.Println(properties.String())
-						}
+						println(formatOutput(properties, c.Bool("json")))
 						dieOk()
-						//dieOk(fmt.Sprintf("IP: %s%sType: %s%sDescription: %s%sRouted to: %s", properties.Ip, NL, properties.Type, NL, properties.Description, NL, properties.RoutedTo.ServiceName))
 					},
 				},
-			}, // end of block subCommands
-		}, // end of ip subcommands
+				// Update properties of a block
+				// for know tou can only update description
+				{
+					Name:        "updateproperties",
+					Usage:       "Update properties of an IP Block",
+					Description: `ovh ip block updateproperties IPBLOCK --desc "description"` + NLTAB + `Example: ovh ip block updateproperties 37.187.0.144/32 --desc "Block routed to lunar base server"`,
+					Flags: []cli.Flag{
+						cli.StringFlag{Name: "desc", Value: "", Usage: "Update block description"},
+						cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+					},
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						dieOnError(IPClient.UpdateBlockProperties(c.Args().First(), c.String("desc")))
+						dieOk()
+					},
+				}, /*{
+					Name:        "getreverses",
+					Usage:       "Return the reverse of IP",
+					Description: "ovh ip reverse XXX.XXX.XXX.XXX",
+					Flags: []cli.Flag{
+						cli.BoolFlag{Name: "json", Usage: "output as JSON"},
+					},
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						RIP, err := IPClient.GetReverse(c.Args().First())
+						if err != nil {
+							dieError(err)
+						}
+						if c.Bool("json") {
+							t, err := json.Marshal(RIP)
+							if err != nil {
+								dieError(err)
+							}
+							fmt.Println(string(t))
+						} else {
+							fmt.Println(RIP.String())
+						}
+						dieOk()
+					},
+				},*/
+			},
+		}, // end of block subCommands
 
 		/*
-			// Update properties
-			{
-				Name:        "updateProperties",
-				Usage:       "Update properties of an IP",
-				Description: `ovh ip updateProperties IPBLOCK --desc "description"` + NLTAB + `Example: ovh ip updateProperties 37.187.0.144/32 --desc "IP routed to lunar base server"`,
-				Flags: []cli.Flag{
-					cli.StringFlag{"desc", "", "Update description", ""},
-				},
-				Action: func(c *cli.Context) {
-					dieIfArgsMiss(len(c.Args()), 1)
-					fDesc := c.String("desc")
-					// check if there is something to update
-					if len(fDesc) == 0 {
-						dieDone()
-					}
-					err := ipr.UpdateProperties(c.Args().First(), fDesc)
-					if err != nil {
-						dieError(err)
-					}
-					dieDone()
-				},
-			},
 			// Reverse
 			{
 				Name:        "reverse",
@@ -122,7 +153,7 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						},
 						Action: func(c *cli.Context) {
 							dieIfArgsMiss(len(c.Args()), 1)
-							RIP, err := ipr.GetReverse(c.Args().First())
+							RIP, err := IPClient.GetReverse(c.Args().First())
 							if err != nil {
 								dieError(err)
 							}
@@ -155,5 +186,4 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 			},*/
 	}
 	return
-
 }
