@@ -1,6 +1,8 @@
 package main
 
 import (
+	"io/ioutil"
+	"os"
 	"strconv"
 
 	"github.com/codegangsta/cli"
@@ -15,9 +17,9 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 		return
 	}
 
-	// Ip commands
+	// /domain commands
 	cmds = []cli.Command{
-		// IPBLock
+		// list domains
 		{
 			Name:        "list",
 			Description: "list domain (all or filter by whois owner)",
@@ -31,6 +33,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 				dieOnError(err)
 				println(formatOutput(domains, c.Bool("json")))
 			},
+			// Zone
 		}, {
 			Name:        "zone",
 			Description: "subcomands for DNS zones",
@@ -64,7 +67,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						dieOk()
 					},
 				},
-				// List Ip Blocks
+				// List records ID
 				{
 					Name:        "getrecordsid",
 					Description: "returns record IDs for a zone",
@@ -83,7 +86,10 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						dieOnError(err)
 						println(formatOutput(IDs, c.Bool("json")))
 					},
-				}, {
+				},
+
+				// Get record
+				{
 					Name:        "getrecords",
 					Description: "returns records for a zone",
 					Usage:       "ovh domain zone getrecords ZONE [--field FIELD] [--sub SUBDOMAIN] [--json]" + NLTAB + "Example: ovh domain zone getrecords ovh.com --field A --json",
@@ -101,7 +107,10 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						dieOnError(err)
 						println(formatOutput(records, c.Bool("json")))
 					},
-				}, {
+				},
+
+				// Delete record
+				{
 					Name:        "delrecord",
 					Description: "delete record",
 					Usage:       "ovh domain zone delrecord ZONE RECORD_ID" + NLTAB + "Example: ovh domain zone delrecord ovh.com 123456",
@@ -111,6 +120,42 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						dieOnError(err)
 						dieOnError(domClient.DeleteRecord(c.Args()[0], int(ID)))
 						dieOk()
+					},
+				},
+				// get (import)zone file
+				{
+					Name:        "import",
+					Description: "import zone as Bind zonefile format",
+					Usage:       "ovh domain zone import ZONE" + NLTAB + "Example: ovh domain zone import ovh.com",
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						zoneFile, err := domClient.GetZoneFile(c.Args().First())
+						dieOnError(err)
+						dieOk(zoneFile)
+					},
+				},
+				// put (export) zone file
+				{
+					Name:        "export",
+					Description: "export zone as Bind format to OVH",
+					Usage:       "ovh domain zone export ZONE [--zone PATH_TO_FILE]" + NLTAB + "Example: ovh domain zone  ovh.com --zone /tmp/domain.com.zone",
+					Flags: []cli.Flag{
+						cli.StringFlag{Name: "zone", Value: "", Usage: "path to zone file"},
+					},
+					Action: func(c *cli.Context) {
+						var zoneFile []byte
+						var err error
+						dieIfArgsMiss(len(c.Args()), 1)
+						zoneFilePath := c.String("zone")
+						if zoneFilePath != "" {
+							zoneFile, err = ioutil.ReadFile(zoneFilePath)
+						} else {
+							zoneFile, err = ioutil.ReadAll(os.Stdin)
+						}
+						dieOnError(err)
+						task, err := domClient.PutZoneFile(c.Args().First(), string(zoneFile))
+						dieOnError(err)
+						dieOk(task)
 					},
 				},
 			},
