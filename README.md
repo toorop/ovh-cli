@@ -67,6 +67,10 @@ Example :
 	OPTIONS:
    		--help, -h	show help
 
+
+### Warning doc is outdated, use CLI help command instead (note that you can clone this repo, update the doc and do a PR ;))
+
+
 * [IP](#ip)
 	* [List IP blocks](#list-ip-blocks)
 	* [Get IP block properties](#get-block-properties)
