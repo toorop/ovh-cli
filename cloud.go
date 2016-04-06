@@ -7,7 +7,7 @@ import (
 	"github.com/toorop/govh/cloud"
 )
 
-// getFwCmds return commands for firewall subsection
+// getCloudCmds return commands for cloud subsection
 func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 	cloud, err := cloud.New(client)
 	if err != nil {
@@ -64,6 +64,37 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 				dieOnError(err)
 				println(formatOutput(project, c.Bool("json")))
 				dieOk()
+			},
+		},
+		/*
+		   ovh cloud instance list PROJECTID
+		   ovh cloud instance snapshot create PROJECTID INSTANCEID
+		   ovh cloud instance snapshot list PROJECTID
+		   ovh cloud instance snapshot delete PROJECTID SNAPSHOTID
+		   ovh cloud instance snapshot info PROJECTID SNAPSHOTID
+		   ovh cloud instance backup PROJECTID INSTANCEID --hourly 24 --daily 7
+		*/
+		{
+			Name:        "instance",
+			Usage:       "Manage instances",
+			Description: "desc",
+			Subcommands: []cli.Command{
+				{
+					Name:        "list",
+					Usage:       "List instances of project",
+					Description: "Example: ovh cloud instance list PROJECTID",
+					Flags: []cli.Flag{
+						cli.BoolFlag{Name: "json", Usage: "if set output as JSON"},
+					},
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						instances, err := cloud.GetInstances(c.Args().First())
+
+						dieOnError(err)
+						println(formatOutput(instances, c.Bool("json")))
+						dieOk()
+					},
+				},
 			},
 		},
 	}

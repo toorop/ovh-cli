@@ -89,7 +89,6 @@ func formatOutput(data interface{}, toJSON bool) string {
 		out = out[:len(out)-1]
 	}
 	return out
-
 }
 
 /*func debug(v ...interface{}) {

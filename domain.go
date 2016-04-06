@@ -141,6 +141,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 					Usage:       "ovh domain zone export ZONE [--zone PATH_TO_FILE]" + NLTAB + "Example: ovh domain zone  ovh.com --zone /tmp/domain.com.zone",
 					Flags: []cli.Flag{
 						cli.StringFlag{Name: "zone", Value: "", Usage: "path to zone file"},
+						cli.BoolFlag{Name: "json", Usage: "output as JSON"},
 					},
 					Action: func(c *cli.Context) {
 						var zoneFile []byte
@@ -155,7 +156,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						dieOnError(err)
 						task, err := domClient.PutZoneFile(c.Args().First(), string(zoneFile))
 						dieOnError(err)
-						dieOk(task)
+						dieOk(formatOutput(task, c.Bool("json")))
 					},
 				},
 			},
