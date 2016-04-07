@@ -67,12 +67,13 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 			},
 		},
 		/*
-		   ovh cloud instance list PROJECTID
-		   ovh cloud instance snapshot create PROJECTID INSTANCEID
-		   ovh cloud instance snapshot list PROJECTID
-		   ovh cloud instance snapshot delete PROJECTID SNAPSHOTID
-		   ovh cloud instance snapshot info PROJECTID SNAPSHOTID
-		   ovh cloud instance backup PROJECTID INSTANCEID --hourly 24 --daily 7
+					   ovh cloud instance list PROJECTID
+			           ovh cloud snapshot list PROJECTID
+			           ovh cloud snapshot info PROJECTID SNAPSHOTID
+					   ovh cloud snapshot create PROJECTID INSTANCEID
+					   ovh cloud snapshot delete PROJECTID SNAPSHOTID
+					   ovh cloud snapshot info PROJECTID SNAPSHOTID
+					   ovh cloud instance backup PROJECTID INSTANCEID --hourly 24 --daily 7
 		*/
 		{
 			Name:        "instance",
@@ -89,7 +90,28 @@ func getCloudCmds(client *govh.OVHClient) (cloudCmds []cli.Command) {
 					Action: func(c *cli.Context) {
 						dieIfArgsMiss(len(c.Args()), 1)
 						instances, err := cloud.GetInstances(c.Args().First())
-
+						dieOnError(err)
+						println(formatOutput(instances, c.Bool("json")))
+						dieOk()
+					},
+				},
+			},
+		},
+		{
+			Name:        "snapshot",
+			Usage:       "Manage snapshot (usage)",
+			Description: "Manage snapshot",
+			Subcommands: []cli.Command{
+				{
+					Name:        "list",
+					Usage:       "Example: ovh cloud snapshot list PROJECTID",
+					Description: "List snapshot of a project",
+					Flags: []cli.Flag{
+						cli.BoolFlag{Name: "json", Usage: "if set output as JSON"},
+					},
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						instances, err := cloud.GetSnapshots(c.Args().First())
 						dieOnError(err)
 						println(formatOutput(instances, c.Bool("json")))
 						dieOk()
