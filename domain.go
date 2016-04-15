@@ -122,7 +122,7 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						dieOk()
 					},
 				},
-				// get (import)zone file
+				// get (import) zone file
 				{
 					Name:        "import",
 					Description: "import zone as Bind zonefile format",
@@ -157,6 +157,17 @@ func getDomainCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						task, err := domClient.PutZoneFile(c.Args().First(), string(zoneFile))
 						dieOnError(err)
 						dieOk(formatOutput(task, c.Bool("json")))
+					},
+				},
+				// Refresh DNSes
+				{
+					Name:        "reload",
+					Description: "apply zone modifications on DNS servers",
+					Usage:       "ovh domain zone reload ZONE" + NLTAB + "Example: ovh domain zone reload ovh.com",
+					Action: func(c *cli.Context) {
+						dieIfArgsMiss(len(c.Args()), 1)
+						dieOnError(domClient.RefreshZone(c.Args()[0]))
+						dieOk()
 					},
 				},
 			},
