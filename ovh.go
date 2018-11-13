@@ -43,10 +43,10 @@ func init() {
 		var r []byte
 
 		if runtime.GOOS == "windows" {
-			fmt.Println(NL, "No consumer key found in environnement vars !", NL)
+			fmt.Println(NL, "No consumer key found in environment vars !", NL)
 		} else {
 			terminal.Stdout.Clear().Move(0, 0).Color("r").
-				Print("No consumer key found in environnement vars !").Nl().Nl().Reset()
+				Print("No consumer key found in environment vars !").Nl().Nl().Reset()
 		}
 		for {
 			fmt.Print("Have you a valid Consumer Key for that app ? (y/n) : ")
