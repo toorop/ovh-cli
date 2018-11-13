@@ -20,7 +20,7 @@ const (
 	NL      = "\r\n"
 	TAB     = "   "
 	NLTAB   = NL + TAB
-	VERSION = "2.0"
+	VERSION = "2.0.1"
 )
 
 var (
@@ -87,13 +87,13 @@ func init() {
 			fmt.Printf("To do it just copy and paste the link below in a browser and follow instructions on OVH website :\r\n\r\n%s\r\n", link)
 		}
 
-		fmt.Println("\r\nWhen it will be done run the following command : \r\n")
+		fmt.Println("\r\nWhen it will be done run the following command :")
 		if runtime.GOOS == "windows" {
 			fmt.Printf("SET OVH_CONSUMER_KEY=%s%s%s", ck, NL, NL)
 		} else {
 			fmt.Printf("export OVH_CONSUMER_KEY=%s%s%s", ck, NL, NL)
 		}
-		fmt.Println("and restart ovh CLI application.\r\n")
+		fmt.Println("and restart ovh CLI application.")
 		os.Exit(0)
 	}
 }

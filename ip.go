@@ -111,7 +111,10 @@ func getIPCmds(OVHClient *govh.OVHClient) (cmds []cli.Command) {
 						dieOnError(IPClient.UpdateBlockProperties(block, c.String("desc")))
 						dieOk()
 					},
-				}, /*{
+				},
+				// 164.132.9.133
+
+				/*{
 					Name:        "getreverses",
 					Usage:       "Return the reverse of IP",
 					Description: "ovh ip reverse XXX.XXX.XXX.XXX",

@@ -5,20 +5,14 @@
 
 ovh-cli brings OVH services to the command line.
 
-<center>
-<img src="http://dl.toorop.fr/pics/ovh-cli-help.png" alt="ovh-cli screenshot">
-</center>
-
-
-
 
 ## How to use
 
 #### 1 - Download executable
 
-* [Windows](http://dl.toorop.fr/softs/ovh_cli/windows/ovh.exe)
-* [MacOS](http://dl.toorop.fr/softs/ovh_cli/macos/ovh)
-* [Linux](http://dl.toorop.fr/softs/ovh_cli/linux/ovh)
+* [Windows](https://github.com/toorop/ovh-cli/releases/download/2.0.1/ovh_windows.exe)
+* [MacOS](https://github.com/toorop/ovh-cli/releases/download/2.0.1/ovh_darwin)
+* [Linux](https://github.com/toorop/ovh-cli/releases/download/2.0.1/ovh_linux)
 
 
 #### 2 - Get a consumer key
